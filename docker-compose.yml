@@ -19,6 +19,10 @@ services:
       RDB_DB: 0
       RDB_PASS: slow
     command: ./web.sh
+    logging:
+      options:
+        max-size: 5m
+        max-file: '5'
     restart: always
   worker:
     image: hippo_worker
@@ -33,6 +37,10 @@ services:
       RDB_DB: 0
       RDB_PASS: slow
     command: ./worker.sh
+    logging:
+      options:
+        max-size: 5m
+        max-file: '5'
     restart: always
   mq:
     image: rabbitmq:3.6
@@ -40,6 +48,10 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: hippo
       RABBITMQ_DEFAULT_PASS: slow
+    logging:
+      options:
+        max-size: 5m
+        max-file: '5'
     restart: always
   db:
     image: postgres:9.5
@@ -48,9 +60,17 @@ services:
       POSTGRES_USER: hippo
       POSTGRES_PASSWORD: slow
     command: postgres -c tcp_keepalives_idle=30 -c tcp_keepalives_interval=10 -c tcp_keepalives_count=3
+    logging:
+      options:
+        max-size: 5m
+        max-file: '5'
     restart: always
   rdb:
     image: redis:3.0
     hostname: rdb
     command: redis-server --requirepass slow --tcp-keepalive 30
+    logging:
+      options:
+        max-size: 5m
+        max-file: '5'
     restart: always
