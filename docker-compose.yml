@@ -19,7 +19,7 @@ services:
       RDB_DB: 0
       RDB_PASS: slow
     command: ./web.sh
-    restart: unless-stopped
+    restart: always
   worker:
     image: hippo_worker
     hostname: worker
@@ -33,14 +33,14 @@ services:
       RDB_DB: 0
       RDB_PASS: slow
     command: ./worker.sh
-    restart: unless-stopped
+    restart: always
   mq:
     image: rabbitmq:3.6
     hostname: mq
     environment:
       RABBITMQ_DEFAULT_USER: hippo
       RABBITMQ_DEFAULT_PASS: slow
-    restart: unless-stopped
+    restart: always
   db:
     image: postgres:9.5
     hostname: db
@@ -48,9 +48,9 @@ services:
       POSTGRES_USER: hippo
       POSTGRES_PASSWORD: slow
     command: postgres -c tcp_keepalives_idle=30 -c tcp_keepalives_interval=10 -c tcp_keepalives_count=3
-    restart: unless-stopped
+    restart: always
   rdb:
     image: redis:3.0
     hostname: rdb
     command: redis-server --requirepass slow --tcp-keepalive 30
-    restart: unless-stopped
+    restart: always
