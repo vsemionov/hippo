@@ -3,4 +3,4 @@
 set -e
 
 cd hippo
-celery worker -A hippo.celery
+su -m hippo -c "celery worker -A hippo.celery"
