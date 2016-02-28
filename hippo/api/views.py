@@ -9,4 +9,3 @@ from . import tasks
 
 def index(request):
     return HttpResponse(str(tasks.add.delay(2, 2).get()))
-    #return HttpResponse("aaa")
