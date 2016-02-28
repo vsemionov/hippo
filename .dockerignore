@@ -4,4 +4,6 @@
 .pydevproject
 .settings
 
+docker-compose.override.yml
+
 **/*.pyc
