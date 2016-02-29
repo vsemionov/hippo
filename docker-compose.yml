@@ -1,6 +1,9 @@
 version: '2'
 services:
   web:
+    extends:
+      file: docker-compose.base.yml
+      service: base
     image: hippo_web
     hostname: web
     ports:
@@ -25,12 +28,10 @@ services:
       WORKERS: 4
       MAX_REQUESTS: 1000
     command: ./web.sh
-    logging:
-      options:
-        max-size: 5m
-        max-file: '5'
-    restart: always
   worker:
+    extends:
+      file: docker-compose.base.yml
+      service: base
     image: hippo_worker
     hostname: worker
     volumes:
@@ -45,40 +46,29 @@ services:
       CELERYD_MAX_TASKS_PER_CHILD: 1000
       CONCURRENCY: 2
     command: ./worker.sh
-    logging:
-      options:
-        max-size: 5m
-        max-file: '5'
-    restart: always
   mq:
+    extends:
+      file: docker-compose.base.yml
+      service: base
     image: rabbitmq:3.6
     hostname: mq
     environment:
       RABBITMQ_DEFAULT_USER: hippo
       RABBITMQ_DEFAULT_PASS: slow
-    logging:
-      options:
-        max-size: 5m
-        max-file: '5'
-    restart: always
   db:
+    extends:
+      file: docker-compose.base.yml
+      service: base
     image: postgres:9.5
     hostname: db
     environment:
       POSTGRES_USER: hippo
       POSTGRES_PASSWORD: slow
     command: postgres -c max_connections=100 -c tcp_keepalives_idle=30 -c tcp_keepalives_interval=10 -c tcp_keepalives_count=3
-    logging:
-      options:
-        max-size: 5m
-        max-file: '5'
-    restart: always
   rdb:
+    extends:
+      file: docker-compose.base.yml
+      service: base
     image: redis:3.0
     hostname: rdb
     command: redis-server --requirepass slow --maxclients 10000 --tcp-keepalive 30
-    logging:
-      options:
-        max-size: 5m
-        max-file: '5'
-    restart: always

@@ -1,0 +1,8 @@
+version: '2'
+services:
+  base:
+    logging:
+      options:
+        max-size: 5m
+        max-file: '5'
+    restart: always
