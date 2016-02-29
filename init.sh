@@ -5,7 +5,7 @@ set -e
 docker-compose up -d db
 
 echo "waiting for the database..."
-until docker-compose run --rm web bash -c "(echo > /dev/tcp/db/5432) &>/dev/null"
+until docker-compose run --rm web bash -c "(echo > /dev/tcp/$DB_HOST/5432) &>/dev/null"
 do
 	echo "waiting..."
 	sleep 2
