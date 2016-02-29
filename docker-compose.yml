@@ -18,6 +18,12 @@ services:
       RDB_HOST: rdb
       RDB_DB: 0
       RDB_PASS: slow
+      CONN_MAX_AGE: 1800
+      BROKER_HEARTBEAT: 60
+      BROKER_POOL_LIMIT: 10
+      CELERY_REDIS_MAX_CONNECTIONS: 10
+      WORKERS: 4
+      MAX_REQUESTS: 1000
     command: ./web.sh
     logging:
       options:
@@ -36,6 +42,8 @@ services:
       RDB_HOST: rdb
       RDB_DB: 0
       RDB_PASS: slow
+      CELERYD_MAX_TASKS_PER_CHILD: 1000
+      CONCURRENCY: 2
     command: ./worker.sh
     logging:
       options:
@@ -59,7 +67,7 @@ services:
     environment:
       POSTGRES_USER: hippo
       POSTGRES_PASSWORD: slow
-    command: postgres -c tcp_keepalives_idle=30 -c tcp_keepalives_interval=10 -c tcp_keepalives_count=3
+    command: postgres -c max_connections=100 -c tcp_keepalives_idle=30 -c tcp_keepalives_interval=10 -c tcp_keepalives_count=3
     logging:
       options:
         max-size: 5m
@@ -68,7 +76,7 @@ services:
   rdb:
     image: redis:3.0
     hostname: rdb
-    command: redis-server --requirepass slow --tcp-keepalive 30
+    command: redis-server --requirepass slow --maxclients 10000 --tcp-keepalive 30
     logging:
       options:
         max-size: 5m

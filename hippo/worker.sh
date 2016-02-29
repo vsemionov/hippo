@@ -2,4 +2,4 @@
 
 set -e
 
-su -m hippo -c "celery -A hippo.celery worker --concurrency 2"
+su -m hippo -c "celery -A hippo.celery worker --concurrency \$CONCURRENCY"

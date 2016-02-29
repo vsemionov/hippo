@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': os.environ.get('DB_DB', 'postgres'),
         'USER': os.environ.get('DB_USER', 'postgres'),
         'PASSWORD': os.environ.get('DB_PASS', ''),
-        'CONN_MAX_AGE': 1800,
+        'CONN_MAX_AGE': int(os.environ.get('CONN_MAX_AGE', '1800')),
     }
 }
 
@@ -135,10 +135,9 @@ if not BROKER_URL:
         vhost=os.environ.get('MQ_VHOST', '')
     )
 
-BROKER_HEARTBEAT = 60
+BROKER_HEARTBEAT = int(os.environ.get('BROKER_HEARTBEAT', '60'))
 
-BROKER_POOL_LIMIT = 10
-BROKER_CONNECTION_TIMEOUT = 10
+BROKER_POOL_LIMIT = int(os.environ.get('BROKER_POOL_LIMIT', '10'))
 
 CELERY_ACKS_LATE = True
 
@@ -147,7 +146,7 @@ CELERY_TASK_RESULT_EXPIRES = 24*60*60
 CELERY_MAX_CACHED_RESULTS = 5000
 
 CELERY_RESULT_BACKEND = 'redis://:%s@%s/%s' % (os.environ.get('RDB_PASS', ''), os.environ.get('RDB_HOST', 'localhost'), os.environ.get('RDB_DB', '0'))
-CELERY_REDIS_MAX_CONNECTIONS = 10
+CELERY_REDIS_MAX_CONNECTIONS = int(os.environ.get('CELERY_REDIS_MAX_CONNECTIONS', '100'))
 
 # Don't use pickle as serializer, json is much safer
 CELERY_TASK_SERIALIZER = "json"
@@ -155,6 +154,6 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_ACCEPT_CONTENT = ['json']
 
 CELERYD_PREFETCH_MULTIPLIER = 1
-CELERYD_MAX_TASKS_PER_CHILD = 1000
+CELERYD_MAX_TASKS_PER_CHILD = int(os.environ.get('CELERYD_MAX_TASKS_PER_CHILD', '1000'))
 
 CELERYD_HIJACK_ROOT_LOGGER = False
