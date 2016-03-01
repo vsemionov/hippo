@@ -4,12 +4,15 @@ set -e
 
 docker-compose up -d db
 
+docker-compose run --rm web su -m hippo -c bash <<EOF
+set -e
 echo "waiting for the database..."
-until docker-compose run --rm web bash -c "(echo > /dev/tcp/\$DB_HOST/5432) &>/dev/null"
+until (echo > /dev/tcp/\$DB_HOST/5432) &>/dev/null
 do
 	echo "waiting..."
 	sleep 2
 done
-docker-compose run --rm web bash -c "python manage.py migrate"
-docker-compose run --rm web bash -c "echo \"from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')\" | python manage.py shell"
-docker-compose run --rm web bash -c "echo yes | python manage.py collectstatic"
+python manage.py migrate
+echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')" | python manage.py shell
+echo
+EOF

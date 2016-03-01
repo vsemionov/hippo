@@ -9,6 +9,8 @@ services:
     volumes:
       - .:/hippo
     environment:
+      WORKERS: 4
+      MAX_REQUESTS: 1000
       ALLOWED_HOSTS: 'www.hippo.com, hippo.com'
       MQ_HOST: mq
       MQ_USER: hippo
@@ -24,8 +26,13 @@ services:
       BROKER_HEARTBEAT: 60
       BROKER_POOL_LIMIT: 10
       CELERY_REDIS_MAX_CONNECTIONS: 10
-      WORKERS: 4
-      MAX_REQUESTS: 1000
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_USE_TLS: 1
+      EMAIL_USER: vsemionov.hippo@gmail.com
+      EMAIL_PASS: hipposlow
+      ADMIN_NAME: 'Hippo Admin'
+      ADMIN_EMAIL: vsemionov.hippo@gmail.com
     command: ./web.sh
   worker:
     extends:
@@ -36,14 +43,14 @@ services:
     volumes:
       - .:/hippo
     environment:
+      CONCURRENCY: 2
+      CELERYD_MAX_TASKS_PER_CHILD: 1000
       MQ_HOST: mq
       MQ_USER: hippo
       MQ_PASS: slow
       RDB_HOST: rdb
       RDB_DB: 0
       RDB_PASS: slow
-      CELERYD_MAX_TASKS_PER_CHILD: 1000
-      CONCURRENCY: 2
     command: ./worker.sh
   mq:
     extends:

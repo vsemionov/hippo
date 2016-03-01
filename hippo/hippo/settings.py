@@ -170,8 +170,29 @@ REST_FRAMEWORK = {
 }
 
 
+# Email
+
+ADMINS = (
+    (os.environ.get('ADMIN_NAME', 'Hippo Admin'), os.environ.get('ADMIN_EMAIL', 'admin@hippo.com')),
+)
+
+MANAGERS = (
+    (os.environ.get('ADMIN_NAME', 'Hippo Admin'), os.environ.get('ADMIN_EMAIL', 'admin@hippo.com')),
+)
+
+SERVER_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@hippo.com')
+DEFAULT_FROM_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@hippo.com')
+
+EMAIL_HOST_USER = os.environ.get('EMAIL_USER', 'admin')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS', '')
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '25'))
+EMAIL_USE_TLS = bool(os.environ.get('EMAIL_USE_TLS', '0'))
+
+
 # Local settings
 try:
-    exec open(os.path.join(BASE_DIR, 'local.conf')) in globals()
+    exec open(os.path.join(BASE_DIR, 'dev.conf')) in globals()
 except IOError:
     pass
