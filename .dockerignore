@@ -5,5 +5,6 @@
 .settings
 
 docker-compose.override.yml
+hippo/hippo/local.conf
 
 **/*.pyc

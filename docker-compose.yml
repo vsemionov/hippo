@@ -7,10 +7,11 @@ services:
     image: hippo_web
     hostname: web
     ports:
-      - "80:80"
+      - '80:80'
     volumes:
       - .:/hippo
     environment:
+      ALLOWED_HOSTS: 'www.hippo.com, hippo.com'
       MQ_HOST: mq
       MQ_USER: hippo
       MQ_PASS: slow

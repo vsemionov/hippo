@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '5jd5p#^0a_v1!(9_)q#$pzr(84#ls)b%fc!db-#7gc@y83ax9f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get('ALLOWED_HOSTS', '*').split(',')]
 
 
 # Application definition
@@ -124,6 +124,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
 # Celery
 
 BROKER_URL = os.environ.get('BROKER_URL', '')
@@ -149,11 +150,18 @@ CELERY_RESULT_BACKEND = 'redis://:%s@%s/%s' % (os.environ.get('RDB_PASS', ''), o
 CELERY_REDIS_MAX_CONNECTIONS = int(os.environ.get('CELERY_REDIS_MAX_CONNECTIONS', '100'))
 
 # Don't use pickle as serializer, json is much safer
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 
 CELERYD_PREFETCH_MULTIPLIER = 1
 CELERYD_MAX_TASKS_PER_CHILD = int(os.environ.get('CELERYD_MAX_TASKS_PER_CHILD', '1000'))
 
 CELERYD_HIJACK_ROOT_LOGGER = False
+
+
+# Local settings
+try:
+    exec open(os.path.join(BASE_DIR, 'local.conf')) in globals()
+except IOError:
+    pass
