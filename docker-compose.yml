@@ -6,8 +6,6 @@ services:
       service: base
     image: hippo_web
     hostname: web
-    ports:
-      - '80:80'
     volumes:
       - .:/hippo
     environment:
