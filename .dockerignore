@@ -9,3 +9,5 @@ hippo/dev.conf
 
 **/*.pyc
 hippo/static
+hippo/cert.pem
+hippo/key.pem

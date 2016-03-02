@@ -6,3 +6,5 @@ docker-compose.override.yml
 
 *.pyc
 hippo/static
+hippo/cert.pem
+hippo/key.pem
