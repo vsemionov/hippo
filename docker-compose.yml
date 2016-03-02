@@ -6,8 +6,6 @@ services:
       service: base
     image: hippo_web
     hostname: web
-    volumes:
-      - .:/hippo
     environment:
       WORKERS: 4
       MAX_REQUESTS: 1000
@@ -34,14 +32,24 @@ services:
       ADMIN_NAME: 'Hippo Admin'
       ADMIN_EMAIL: vsemionov.hippo@gmail.com
     command: ./web.sh
+  proxy:
+    extends:
+      file: docker-compose.base.yml
+      service: base
+    depends_on:
+      - web
+    image: hippo_proxy
+    hostname: proxy
+    environment:
+      WORKER_CONNECTIONS: 1024
+      WEB_HOST: web
+    command: ./proxy.sh
   worker:
     extends:
       file: docker-compose.base.yml
       service: base
     image: hippo_worker
     hostname: worker
-    volumes:
-      - .:/hippo
     environment:
       CONCURRENCY: 2
       CELERYD_MAX_TASKS_PER_CHILD: 1000
