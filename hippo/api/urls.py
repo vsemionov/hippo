@@ -1,10 +1,12 @@
 from django.conf.urls import url, include
 from rest_framework import routers
-import views
+
+from api import views
+
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
+# register job endpoint in the router
+router.register(r'jobs', views.JobViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
