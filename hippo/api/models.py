@@ -27,7 +27,7 @@ class Job(models.Model):
 
     @taskref
     def save(self, *args, **kwargs):
-        super(JobMixin, self).save(*args, **kwargs)
+        super(Job, self).save(*args, **kwargs)
         if self.status == self.STATES['pending']:
             task = tasks.power
             task.delay(job_id=self.id, n=self.argument)
