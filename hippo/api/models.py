@@ -1,35 +1,27 @@
+from collections import OrderedDict
+
 from django.db import models
 
 
 class Job(models.Model):
-    """Class describing a computational job"""
-
-    # currently, available types of job are:
-    TYPES = (
-        ('fibonacci', 'fibonacci'),
-        ('power', 'power'),
-    )
-
-    # list of statuses that job can have
-    STATUSES = (
+    STATES = OrderedDict((
         ('pending', 'pending'),
         ('started', 'started'),
         ('finished', 'finished'),
         ('failed', 'failed'),
-    )
+    ))
 
-    type = models.CharField(choices=TYPES, max_length=20)
-    status = models.CharField(choices=STATUSES, max_length=20)
+    state = models.CharField(choices=STATES.items(), max_length=10)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
     argument = models.PositiveIntegerField()
     result = models.IntegerField(null=True)
 
     def save(self, *args, **kwargs):
-        """Save model and if job is in pending state, schedule it"""
-        super(Job, self).save(*args, **kwargs)
-        if self.status == 'pending':
-            from .tasks import TASK_MAPPING
-            task = TASK_MAPPING[self.type]
+        super(JobMixin, self).save(*args, **kwargs)
+        if self.status == self.STATES['pending']:
+            from . import tasks
+            task = tasks.power
             task.delay(job_id=self.id, n=self.argument)
