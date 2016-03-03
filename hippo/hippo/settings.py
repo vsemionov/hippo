@@ -166,8 +166,7 @@ CELERYD_HIJACK_ROOT_LOGGER = False
 # REST framework
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-    'PAGE_SIZE': 10
+    'PAGINATE_BY': 10
 }
 
 

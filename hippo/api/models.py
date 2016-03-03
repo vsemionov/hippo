@@ -11,13 +11,14 @@ class Job(models.Model):
         ('failed', 'failed'),
     ))
 
-    state = models.CharField(choices=STATES.items(), max_length=10)
+    owner = models.ForeignKey('auth.User', editable=False)
+    state = models.CharField(choices=STATES.items(), default=STATES['pending'], max_length=10, editable=False)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     argument = models.PositiveIntegerField()
-    result = models.IntegerField(null=True)
+    result = models.IntegerField(null=True, editable=False)
 
     def save(self, *args, **kwargs):
         super(Job, self).save(*args, **kwargs)
