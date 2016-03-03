@@ -3,7 +3,7 @@ from collections import OrderedDict
 from django.db import models
 
 
-def ref_tasks(fn):
+def taskref(fn):
     def wrapper(fn, *args, **kwargs):
         from . import tasks
         return fn(*args, **kwargs)
@@ -25,7 +25,7 @@ class Job(models.Model):
     argument = models.PositiveIntegerField()
     result = models.IntegerField(null=True)
 
-    @ref_tasks
+    @taskref
     def save(self, *args, **kwargs):
         super(JobMixin, self).save(*args, **kwargs)
         if self.status == self.STATES['pending']:
