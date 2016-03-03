@@ -3,12 +3,6 @@ from collections import OrderedDict
 from django.db import models
 
 
-def taskref(fn):
-    def wrapper(fn, *args, **kwargs):
-        from . import tasks
-        return fn(*args, **kwargs)
-    return fn
-
 class Job(models.Model):
     STATES = OrderedDict((
         ('pending', 'pending'),
@@ -25,9 +19,9 @@ class Job(models.Model):
     argument = models.PositiveIntegerField()
     result = models.IntegerField(null=True)
 
-    @taskref
     def save(self, *args, **kwargs):
         super(Job, self).save(*args, **kwargs)
         if self.state == self.STATES['pending']:
+            import tasks
             task = tasks.power
             task.delay(job_id=self.id, n=self.argument)
