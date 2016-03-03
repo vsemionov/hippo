@@ -13,6 +13,6 @@ do
 	sleep 2
 done
 python manage.py migrate
-echo "import os; from django.contrib.auth.models import User; User.objects.create_superuser('admin', os.environ.get('ADMIN_EMAIL', 'admin@example.com'), 'admin')" | python manage.py shell
+echo "import os; from django.contrib.auth.models import User; User.objects.filter(is_superuser=True).count() or User.objects.create_superuser('admin', os.environ.get('ADMIN_EMAIL', 'admin@example.com'), 'admin')" | python manage.py shell
 echo
 EOF
