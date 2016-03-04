@@ -9,6 +9,7 @@ from .permissions import JobPermissions
 class JobViewSet(mixins.CreateModelMixin,
                  mixins.ListModelMixin,
                  mixins.RetrieveModelMixin,
+                 mixins.DestroyModelMixin,
                  viewsets.GenericViewSet):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
