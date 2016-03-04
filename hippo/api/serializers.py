@@ -11,6 +11,7 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
         model = Job
 
 class UserSerializer(serializers.ModelSerializer):
+    # TODO: filter user jobs by matching request.user to job.owner
     jobs = serializers.HyperlinkedRelatedField(many=True, source='job_set', view_name='job-detail', read_only=True)
 
     class Meta:
