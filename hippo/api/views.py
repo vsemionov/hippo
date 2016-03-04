@@ -1,5 +1,5 @@
-from django.contrib.auth.models import User
 from django.db.models import Q
+from django.contrib.auth.models import User
 from rest_framework import mixins, viewsets, permissions
 
 from .models import Job
