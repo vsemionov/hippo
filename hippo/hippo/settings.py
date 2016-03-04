@@ -166,7 +166,7 @@ CELERYD_HIJACK_ROOT_LOGGER = False
 # REST framework
 
 REST_FRAMEWORK = {
-    'PAGINATE_BY': 10
+    'PAGINATE_BY': 10,
 }
 
 
