@@ -192,7 +192,7 @@ MANAGERS = (
 
 
 # Local settings
-try:
-    exec open(os.path.join(BASE_DIR, 'dev.conf')) in globals()
-except IOError:
-    pass
+
+LOCAL_SETTINGS_FILE = os.environ.get('LOCAL_SETTINGS_FILE')
+if LOCAL_SETTINGS_FILE:
+    exec open(LOCAL_SETTINGS_FILE) in globals()
