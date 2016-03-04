@@ -11,7 +11,7 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
         model = Job
 
 class UserSerializer(serializers.ModelSerializer):
-    jobs = serializers.PrimaryKeyRelatedField(many=True, source='job_set', read_only=True)
+    jobs = serializers.HyperlinkedRelatedField(many=True, source='job_set', view_name='job-detail', read_only=True)
 
     class Meta:
         model = User
