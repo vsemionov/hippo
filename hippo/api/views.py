@@ -26,8 +26,8 @@ class JobViewSet(mixins.CreateModelMixin,
         serializer.save(owner=self.request.user)
 
 class UserViewSet(mixins.ListModelMixin,
-                 mixins.RetrieveModelMixin,
-                 viewsets.GenericViewSet):
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
