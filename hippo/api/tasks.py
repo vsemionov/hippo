@@ -24,7 +24,7 @@ def process_job(fn):
             job.state = Job.STATES['failed']
         finally:
             job.save()
-            if job.notify:
+            if job.notify and job.owner.email:
                 notify.delay(job.owner.email, job_url)
     return wrapper
 
