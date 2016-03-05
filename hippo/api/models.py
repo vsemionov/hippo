@@ -12,8 +12,10 @@ class Job(models.Model):
     ))
 
     owner = models.ForeignKey('auth.User', editable=False)
-    public = models.BooleanField(default=False)
     state = models.CharField(choices=STATES.items(), default=STATES['pending'], max_length=10, editable=False)
+
+    public = models.BooleanField(default=False)
+    notify = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
