@@ -1,6 +1,5 @@
 Django==1.9.2
 celery==3.1.20
-django-debug-toolbar==1.4
 djangorestframework==3.3.2
 gevent==1.0.2
 gunicorn==19.4.5
