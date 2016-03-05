@@ -74,6 +74,7 @@ services:
       EMAIL_PASS: hipposlow
       ADMIN_NAME: 'Hippo Admin'
       ADMIN_EMAIL: vsemionov.hippo@gmail.com
+      LOCAL_SETTINGS_FILE: /hippo/hippo/hippo/worker.conf
     command: ./worker.sh
   mq:
     extends:

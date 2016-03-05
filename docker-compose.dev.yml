@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/hippo
     environment:
-      LOCAL_SETTINGS_FILE: /hippo/hippo/dev.conf
+      LOCAL_SETTINGS_FILE: /hippo/hippo/hippo/dev.conf
     command: python manage.py runserver 0.0.0.0:8000
     restart: 'no'
   proxy:
