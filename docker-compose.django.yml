@@ -4,6 +4,7 @@ services:
     extends:
       file: docker-compose.base.yml
       service: base
+    environment:
       ALLOWED_HOSTS: 'www.hippo.com, hippo.com'
       MQ_HOST: mq
       MQ_USER: hippo
