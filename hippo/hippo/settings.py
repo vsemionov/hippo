@@ -128,6 +128,29 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
+# Cache
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '{host}:6379'.format(host=os.environ.get('RDB_HOST', 'localhost')),
+        'OPTIONS': {
+            'DB': int(os.environ.get('RDB_CACHE_DB', '0')),
+            'PASSWORD': os.environ.get('RDB_PASS', ''),
+            'SOCKET_TIMEOUT': 5,
+            'SOCKET_CONNECT_TIMEOUT': 5,
+            'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
+            'CONNECTION_POOL_CLASS_KWARGS': {
+                'max_connections': 50,
+                'timeout': 20,
+            },
+        },
+    },
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+
 # Celery
 
 BROKER_URL = os.environ.get('BROKER_URL', '')
@@ -149,7 +172,7 @@ CELERY_IGNORE_RESULT = False
 CELERY_TASK_RESULT_EXPIRES = 24*60*60
 CELERY_MAX_CACHED_RESULTS = 5000
 
-CELERY_RESULT_BACKEND = 'redis://:%s@%s/%s' % (os.environ.get('RDB_PASS', ''), os.environ.get('RDB_HOST', 'localhost'), os.environ.get('RDB_DB', '0'))
+CELERY_RESULT_BACKEND = 'redis://:%s@%s/%s' % (os.environ.get('RDB_PASS', ''), os.environ.get('RDB_HOST', 'localhost'), os.environ.get('RDB_TASK_DB', '1'))
 CELERY_REDIS_MAX_CONNECTIONS = int(os.environ.get('CELERY_REDIS_MAX_CONNECTIONS', '100'))
 
 # Don't use pickle as serializer, json is much safer
