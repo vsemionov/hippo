@@ -15,11 +15,9 @@ def process_job(fn):
         job.save()
         try:
             result = fn(job.argument)
-            job.refresh_from_db()
             job.result = result
             job.state = Job.STATES['finished']
         except:
-            job.refresh_from_db()
             job.result = None
             job.state = Job.STATES['failed']
         finally:
