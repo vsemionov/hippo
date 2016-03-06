@@ -1,0 +1,25 @@
+version: '2'
+services:
+  django:
+    extends:
+      file: docker-compose.base.yml
+      service: base
+      ALLOWED_HOSTS: 'www.hippo.com, hippo.com'
+      MQ_HOST: mq
+      MQ_USER: hippo
+      MQ_PASS: slow
+      DB_HOST: db
+      DB_DB: hippo
+      DB_USER: hippo
+      DB_PASS: slow
+      RDB_HOST: rdb
+      RDB_CACHE_DB: 0
+      RDB_TASK_DB: 1
+      RDB_PASS: slow
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_USE_TLS: 1
+      EMAIL_USER: vsemionov.hippo@gmail.com
+      EMAIL_PASS: hipposlow
+      ADMIN_NAME: 'Hippo Admin'
+      ADMIN_EMAIL: vsemionov.hippo@gmail.com
