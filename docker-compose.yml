@@ -9,6 +9,8 @@ services:
     environment:
       WORKERS: 2
       MAX_REQUESTS: 1000
+      ADMIN_USER: admin
+      ADMIN_PASS: admin
     command: ./web.sh
   worker:
     extends:
@@ -43,6 +45,9 @@ services:
       service: base
     image: mongo:3.2
     hostname: mdb
+    environment:
+      ADMIN_USER: hippo
+      ADMIN_PASS: slow
     command: mongod --auth --maxConns 1000
   mq:
     extends:
