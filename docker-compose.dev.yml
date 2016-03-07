@@ -23,6 +23,10 @@ services:
     ports:
       - '6379:6379'
     restart: 'no'
+  mdb:
+    ports:
+      - '27017:27017'
+    restart: 'no'
   mq:
     ports:
       - '5672:5672'

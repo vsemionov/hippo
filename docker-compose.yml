@@ -37,6 +37,13 @@ services:
     image: redis:3.0
     hostname: rdb
     command: redis-server --requirepass slow --maxclients 10000 --tcp-keepalive 30
+  mdb:
+    extends:
+      file: docker-compose.base.yml
+      service: base
+    image: mongo:3.2
+    hostname: mdb
+    command: mongod --auth --maxConns 1000
   mq:
     extends:
       file: docker-compose.base.yml

@@ -17,6 +17,10 @@ services:
       RDB_CACHE_DB: 0
       RDB_TASK_DB: 1
       RDB_PASS: slow
+      MDB_HOST: mdb
+      MDB_DB: hippo
+      MDB_USER: hippo
+      MDB_PASS: slow
       EMAIL_HOST: smtp.gmail.com
       EMAIL_PORT: 587
       EMAIL_USE_TLS: 1
