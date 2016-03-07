@@ -20,13 +20,13 @@ def process_job(fn):
             result = fn(job.argument)
             job.result = result
             job.state = Job.STATES['finished']
+            return result
         except:
             job.result = None
             job.state = Job.STATES['failed']
+            raise
         finally:
             job.save()
-            if job.notify and job.owner.email:
-                notify.delay(job.owner.email, job_url)
     return wrapper
 
 def retry_job(fn):
@@ -38,12 +38,20 @@ def retry_job(fn):
             self.retry(exc=exc, countdown=30, max_retries=2**31)
     return wrapper
 
+def notify(email, url, state):
+    subject = 'Hippo job {state}'.format(state=state)
+    message = 'Your Hippo job has {state}. You can view the job: {url}'.format(state=state, url=url)
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, (email,))
+
 @shared_task(bind=True)
 @retry_job
-def notify(owner_email, job_url):
-    subject = 'Hippo job completed'
-    message = 'Your Hippo job has been completed. You can view the results here: {url}'.format(url=job_url)
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, (owner_email,))
+def notify_finished(email, url):
+    notify(email, url, 'finished')
+
+@shared_task(bind=True)
+@retry_job
+def notify_failed(email, url):
+    notify(email, url, 'failed')
 
 @shared_task(bind=True)
 @retry_job

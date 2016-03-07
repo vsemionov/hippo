@@ -25,8 +25,11 @@ class JobViewSet(mixins.CreateModelMixin,
         serializer.save(owner=self.request.user)
         job = serializer.instance
         job_url = self.request.build_absolute_uri(reverse('job-detail', args=[job.id]))
-        task = tasks.power
-        task.delay(job.id, job_url)
+        power, link, link_error = tasks.power, None, None
+        if job.notify and job.owner.email:
+            notify_finished, notify_failed = tasks.notify_finished, tasks.notify_failed
+            link, link_error = notify_finished.si(job.owner.email, job_url), notify_failed.si(job.owner.email, job_url)
+        power.apply_async((job.id, job_url), link=link, link_error=link_error)
 
 
 class UserViewSet(mixins.ListModelMixin,
