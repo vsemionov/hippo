@@ -13,20 +13,18 @@ from .models import Job
 def process_job(fn):
     @wraps(fn)
     def wrapper(job_id, job_url):
-        job = Job.objects.get(id=job_id)
-        job.state = Job.STATES['started']
-        job.save()
+        job_filter = Job.objects.filter(id=job_id)
+        job_filter.update(state=Job.STATES['started'])
         try:
+            job = Job.objects.get(id=job_id)
             result = fn(job.argument)
-            job.result = result
-            job.state = Job.STATES['finished']
+            state = Job.STATES['finished']
             return result
         except:
-            job.result = None
-            job.state = Job.STATES['failed']
+            state = Job.STATES['failed']
             raise
         finally:
-            job.save()
+            job_filter.update(state=state)
     return wrapper
 
 def retry_job(fn):
@@ -35,6 +33,7 @@ def retry_job(fn):
         try:
             return fn(*args, **kwargs)
         except (socket.error, OperationalError) as exc:
+            # TODO: retry on result storage connection error (pymongo.errors.ConnectionFailure)
             self.retry(exc=exc, countdown=30, max_retries=2**31)
     return wrapper
 

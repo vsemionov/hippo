@@ -21,4 +21,4 @@ class Job(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     argument = models.PositiveIntegerField()
-    result = models.IntegerField(null=True, editable=False)
+    result_id = models.CharField(null=True, max_length=36, editable=False)

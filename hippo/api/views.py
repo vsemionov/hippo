@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+
 from rest_framework import mixins, viewsets, permissions, serializers
+
+from celery.result import AsyncResult
 
 from .models import Job
 from .serializers import JobSerializer, UserSerializer
@@ -29,7 +32,15 @@ class JobViewSet(mixins.CreateModelMixin,
         if job.notify and job.owner.email:
             notify_finished, notify_failed = tasks.notify_finished, tasks.notify_failed
             link, link_error = notify_finished.si(job.owner.email, job_url), notify_failed.si(job.owner.email, job_url)
-        power.apply_async((job.id, job_url), link=link, link_error=link_error)
+        result = power.apply_async((job.id, job_url), link=link, link_error=link_error)
+        Job.objects.filter(id=job.id).update(result_id=result.id)
+
+    def perform_destroy(self, instance):
+        instance.delete()
+        result_id = instance.result_id
+        if result_id:
+            AsyncResult(result_id).revoke()
+            # TODO: delete stored results
 
 
 class UserViewSet(mixins.ListModelMixin,
