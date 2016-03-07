@@ -10,22 +10,10 @@ services:
       LOCAL_SETTINGS_FILE: /hippo/hippo/hippo/dev.conf
     command: python manage.py runserver 0.0.0.0:8000
     restart: 'no'
-  proxy:
-    build: .
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - .:/hippo
-    restart: 'no'
   worker:
     build: .
     volumes:
       - .:/hippo
-    restart: 'no'
-  mq:
-    ports:
-      - '5672:5672'
     restart: 'no'
   db:
     ports:
@@ -34,4 +22,16 @@ services:
   rdb:
     ports:
       - '6379:6379'
+    restart: 'no'
+  mq:
+    ports:
+      - '5672:5672'
+    restart: 'no'
+  proxy:
+    build: .
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - .:/hippo
     restart: 'no'

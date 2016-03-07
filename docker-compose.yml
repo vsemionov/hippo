@@ -10,17 +10,6 @@ services:
       WORKERS: 2
       MAX_REQUESTS: 1000
     command: ./web.sh
-  proxy:
-    extends:
-      file: docker-compose.base.yml
-      service: base
-    depends_on:
-      - web
-    image: hippo_proxy
-    hostname: proxy
-    environment:
-      WEB_HOST: web
-    command: ./proxy.sh
   worker:
     extends:
       file: docker-compose.django.yml
@@ -31,15 +20,6 @@ services:
       CONCURRENCY: 4
       MAX_TASKS_PER_CHILD: 1000
     command: ./worker.sh
-  mq:
-    extends:
-      file: docker-compose.base.yml
-      service: base
-    image: rabbitmq:3.6
-    hostname: mq
-    environment:
-      RABBITMQ_DEFAULT_USER: hippo
-      RABBITMQ_DEFAULT_PASS: slow
   db:
     extends:
       file: docker-compose.base.yml
@@ -57,3 +37,23 @@ services:
     image: redis:3.0
     hostname: rdb
     command: redis-server --requirepass slow --maxclients 10000 --tcp-keepalive 30
+  mq:
+    extends:
+      file: docker-compose.base.yml
+      service: base
+    image: rabbitmq:3.6
+    hostname: mq
+    environment:
+      RABBITMQ_DEFAULT_USER: hippo
+      RABBITMQ_DEFAULT_PASS: slow
+  proxy:
+    extends:
+      file: docker-compose.base.yml
+      service: base
+    depends_on:
+      - web
+    image: hippo_proxy
+    hostname: proxy
+    environment:
+      WEB_HOST: web
+    command: ./proxy.sh
