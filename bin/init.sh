@@ -4,7 +4,7 @@ set -e
 
 docker-compose up -d db
 
-docker-compose run --rm web su -m hippo -c bash <<EOF
+docker-compose run --rm web su hippo -p -c bash <<EOF
 set -e
 echo "waiting for the database..."
 until (echo > /dev/tcp/\$DB_HOST/5432) &>/dev/null
