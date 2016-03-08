@@ -17,7 +17,7 @@ def process_job(fn):
         job_filter.update(state=Job.STATES['started'])
         try:
             job = Job.objects.get(id=job_id)
-            result = fn(job.argument)
+            result = fn(job.input)
             state = Job.STATES['finished']
             return result
         except:
@@ -55,5 +55,5 @@ def notify_failed(email, url):
 @shared_task(bind=True)
 @retry_job
 @process_job
-def power(n):
-    return 2 ** n
+def execute(input_file):
+    pass

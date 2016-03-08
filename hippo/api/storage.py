@@ -38,7 +38,7 @@ class GridFSStorage(Storage):
         client = MongoClient(host=host, port=port, **options)
         self.db = client[db]
         if user:
-            db.authenticate(user, password, auth_db)
+            self.db.authenticate(user, password, auth_db)
         self.fs = GridFS(self.db, collection=collection)
 
     def _open(self, name, mode='rb'):
@@ -46,7 +46,8 @@ class GridFSStorage(Storage):
 
     def _save(self, name, content):
         name = force_unicode(name).replace('\\', '/')
-        with content.open():
+        content.open()
+        try:
             kwargs = {'filename': name}
             if hasattr(content.file, 'content_type'):
                 kwargs['content_type'] = content.file.content_type
@@ -56,6 +57,8 @@ class GridFSStorage(Storage):
                         gfile.write(chunk)
                 else:
                     gfile.write(content)
+        finally:
+            content.close()
         return name
 
     def get_valid_name(self, name):
@@ -82,7 +85,7 @@ class GridFSStorage(Storage):
             raise ValueError('File with name "%s" does not exist' % name)
 
     def url(self, name):
-        raise NotImplementedError()
+        return name
 
 
 class GridFSFile(File):

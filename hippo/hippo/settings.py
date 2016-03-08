@@ -128,6 +128,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
+# File uploads
+
+DEFAULT_FILE_STORAGE = 'api.storage.GridFSStorage'
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1024*1024
+MAX_UPLOAD_FILE_SIZE = 512*1024
+
+
 # Cache
 
 CACHES = {

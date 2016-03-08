@@ -1,7 +1,16 @@
 from collections import OrderedDict
 
 from django.db import models
+from django.conf import settings
+from django.core.exceptions import ValidationError
 
+
+def user_dir(instance, filename):
+    return "%s/%s" % (instance.owner.username, filename)
+
+def file_size_validator(value):
+    if value.size > settings.MAX_UPLOAD_FILE_SIZE:
+        raise ValidationError("Maximum file size exceeded")
 
 class Job(models.Model):
     STATES = OrderedDict((
@@ -20,5 +29,5 @@ class Job(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    argument = models.PositiveIntegerField()
+    input = models.FileField(upload_to=user_dir, validators=[file_size_validator])
     result_id = models.CharField(null=True, max_length=36, editable=False)
