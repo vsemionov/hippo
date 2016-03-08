@@ -34,3 +34,7 @@ class Job(models.Model):
 
     input = models.FileField(upload_to=user_dir, validators=[file_size_validator, file_content_validator])
     result_id = models.CharField(null=True, max_length=36, editable=False)
+
+    def delete(self, *args, **kwargs):
+        self.input.delete(save=False)
+        return super(Job, self).delete(*args, **kwargs)
