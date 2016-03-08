@@ -102,6 +102,15 @@ class GridFSFile(File):
             raise ValueError("The file doesn't exist.")
 
     @property
+    def closed(self):
+        return False
+
+    def open(self, mode=None):
+        if mode and mode != self._mode:
+            raise ValueError("The file cannot be reopened.")
+        self.file.seek(0)
+
+    @property
     def size(self):
         return self.file.length
 

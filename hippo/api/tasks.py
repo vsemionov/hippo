@@ -29,7 +29,7 @@ def process_job(fn):
         job_filter.update(state=Job.STATES['started'])
         try:
             job = Job.objects.get(id=job_id)
-            fresult = fn(job.input)
+            fresult = fn(job.input.file)
             result_name = get_result_name(job.input.name)
             job.result.save(result_name, fresult, save=False)
             job_filter.update(state=Job.STATES['finished'], result=job.result)
@@ -69,5 +69,4 @@ def notify_failed(email, url):
 @retry_job
 @process_job
 def execute(input_file):
-    from django.core.files.base import ContentFile
-    return ContentFile("test")
+    return input_file
