@@ -8,6 +8,8 @@ from gridfs import GridFS, NoFile
 
 
 class GridFSStorage(Storage):
+    URL_PREFIX = '/files/'
+
     DEFAULT_CONFIG = {
         'HOST': 'localhost',
         'PORT': 27017,
@@ -85,7 +87,7 @@ class GridFSStorage(Storage):
             raise ValueError('File with name "%s" does not exist' % name)
 
     def url(self, name):
-        return name
+        return '%s%s' % (self.URL_PREFIX, name)
 
 
 class GridFSFile(File):
