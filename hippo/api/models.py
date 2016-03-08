@@ -39,4 +39,5 @@ class Job(models.Model):
 
     def delete(self, *args, **kwargs):
         self.input.delete(save=False)
+        self.result.delete(save=False)
         return super(Job, self).delete(*args, **kwargs)
