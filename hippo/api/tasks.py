@@ -7,6 +7,8 @@ from django.core.mail import send_mail
 
 from celery import shared_task
 
+from pymongo.errors import ConnectionFailure
+
 from .models import Job
 
 
@@ -32,8 +34,7 @@ def retry_job(fn):
     def wrapper(self, *args, **kwargs):
         try:
             return fn(*args, **kwargs)
-        except (socket.error, OperationalError) as exc:
-            # TODO: retry on result storage connection error (pymongo.errors.ConnectionFailure)
+        except (socket.error, OperationalError, ConnectionFailure) as exc:
             self.retry(exc=exc, countdown=30, max_retries=2**31)
     return wrapper
 

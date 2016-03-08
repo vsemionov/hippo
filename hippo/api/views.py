@@ -40,7 +40,6 @@ class JobViewSet(mixins.CreateModelMixin,
         result_id = instance.result_id
         if result_id:
             AsyncResult(result_id).revoke()
-            # TODO: delete stored results
 
 
 class UserViewSet(mixins.ListModelMixin,
