@@ -1,55 +1,61 @@
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import File
 from django.core.files.storage import Storage
-from django.db import connections
 from django.utils.encoding import force_unicode
 
-try:
-    from gridfs import GridFS, NoFile
-except ImportError:
-    raise ImproperlyConfigured("Could not load gridfs dependency.\
-    \nSee http://www.mongodb.org/display/DOCS/GridFS")
+from pymongo import MongoClient
+from gridfs import GridFS, NoFile
 
-try:
-    from pymongo import Connection
-except ImportError:
-    raise ImproperlyConfigured("Could not load pymongo dependency.\
-    \nSee http://github.com/mongodb/mongo-python-driver")
 
 class GridFSStorage(Storage):
-    @property
-    def fs(self):
-        db = settings.GRIDFS_DATABASE
-        # This should support both the django_mongodb_engine and the GSoC 2010
-        # MongoDB backend
-        from django_mongodb_engine import __version__
-        if __version__[0] == 0 and __version__[1] <= 3:
-            try:
-                connection = connections[db].db_connection
-            except:
-                connection = connections[db].connection
-            return GridFS(connection)
-        else:
-            return GridFS(connections[db].database)
+    DEFAULT_CONFIG = {
+        'HOST': 'localhost',
+        'PORT': 27017,
+        'DB': 'admin',
+        'AUTH_DB': 'admin',
+        'USER': '',
+        'PASS': '',
+        'GRIDFS': 'fs',
+        'OPTIONS': {
+            }
+    }
+
+    def __init__(self, host=None, port=None, db=None, auth_db=None, user=None, password=None, collection=None):
+        config = self.DEFAULT_CONFIG.copy()
+        options = config['OPTIONS'].copy()
+        config.update(getattr(settings, 'MONGODB', {}))
+        options.update(config['OPTIONS'])
+        config['OPTIONS'] = options
+
+        host = host or config['HOST']
+        port = port or config['PORT']
+        db = db or config['DB']
+        auth_db = auth_db or config['AUTH_DB']
+        user = user if user is not None else config['USER']
+        password = password or config['PASS']
+        collection = collection or config['GRIDFS']
+
+        client = MongoClient(host=host, port=port, **options)
+        self.db = client[db]
+        if user:
+            db.authenticate(user, password, auth_db)
+        self.fs = GridFS(self.db, collection=collection)
 
     def _open(self, name, mode='rb'):
         return GridFSFile(name, self, mode=mode)
 
     def _save(self, name, content):
         name = force_unicode(name).replace('\\', '/')
-        content.open()
-        kwargs = {'filename': name}
-        if hasattr(content.file, 'content_type'):
-            kwargs['content_type'] = content.file.content_type
-        file = self.fs.new_file(**kwargs)
-        if hasattr(content, 'chunks'):
-            for chunk in content.chunks():
-                file.write(chunk)
-        else:
-            file.write(content)
-        file.close()
-        content.close()
+        with content.open():
+            kwargs = {'filename': name}
+            if hasattr(content.file, 'content_type'):
+                kwargs['content_type'] = content.file.content_type
+            with self.fs.new_file(**kwargs) as gfile:
+                if hasattr(content, 'chunks'):
+                    for chunk in content.chunks():
+                        gfile.write(chunk)
+                else:
+                    gfile.write(content)
         return name
 
     def get_valid_name(self, name):
@@ -78,6 +84,7 @@ class GridFSStorage(Storage):
     def url(self, name):
         raise NotImplementedError()
 
+
 class GridFSFile(File):
     def __init__(self, name, storage, mode):
         self.name = name
@@ -101,4 +108,3 @@ class GridFSFile(File):
 
     def close(self):
         self.file.close()
-

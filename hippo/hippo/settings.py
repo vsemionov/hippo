@@ -151,6 +151,24 @@ CACHES = {
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 
+# MongoDB
+
+MONGODB = {
+    'HOST': os.environ.get('MDB_HOST', 'localhost'),
+    'DB': os.environ.get('MDB_DB', 'admin'),
+    'AUTH_DB': os.environ.get('MDB_AUTH_DB', 'admin'),
+    'USER': os.environ.get('MDB_USER', ''),
+    'PASS': os.environ.get('MDB_PASS', ''),
+    'OPTIONS': {
+            'maxPoolSize': 100,
+            'socketTimeoutMS': 10000,
+            'connectTimeoutMS': 10000,
+            'waitQueueTimeoutMS': 20000,
+            'socketKeepAlive': True,
+        }
+}
+
+
 # Celery
 
 BROKER_URL = os.environ.get('BROKER_URL', '')
