@@ -14,8 +14,6 @@ services:
     build: .
     volumes:
       - .:/hippo
-    environment:
-      ARGS: --autoreload
     restart: 'no'
   db:
     ports:
