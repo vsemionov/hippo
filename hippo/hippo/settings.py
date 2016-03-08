@@ -242,4 +242,4 @@ MANAGERS = (
 
 LOCAL_SETTINGS_FILE = os.environ.get('LOCAL_SETTINGS_FILE')
 if LOCAL_SETTINGS_FILE:
-    exec open(LOCAL_SETTINGS_FILE) in globals()
+    execfile(LOCAL_SETTINGS_FILE, globals())
