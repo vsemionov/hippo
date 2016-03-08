@@ -1,5 +1,9 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.views.decorators.http import require_safe
+from django.shortcuts import get_object_or_404
+from django.http import Http404, FileResponse
+from django.db.models import Q
 
 from rest_framework import mixins, viewsets, permissions, serializers
 
@@ -57,3 +61,18 @@ class UserViewSet(mixins.ListModelMixin,
         userser = serializer if not isinstance(serializer, serializers.ListSerializer) else serializer.child
         userser.fields['jobs'].get_attribute = get_user_jobs_filter_func(self.request)
         return serializer
+
+@require_safe
+def files(request, name):
+    q = Q(input=name) | Q(result=name)
+    job = get_object_or_404(Job, q)
+    if not JobPermissions().has_object_permission(request, None, job):
+        raise Http404()
+    ffile = job.input if (job.input and job.input.name == name) else job.result
+    assert ffile.name == name
+    content_type = 'application/octet-stream'
+    if hasattr(ffile.file, 'file'):
+        if hasattr(ffile.file.file, 'content_type'):
+            if ffile.file.file.content_type:
+                content_type = ffile.file.file.content_type
+    return FileResponse(ffile, content_type=content_type)

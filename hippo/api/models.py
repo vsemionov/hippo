@@ -32,8 +32,8 @@ class Job(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    input = models.FileField(upload_to=user_dir, validators=[file_size_validator, file_content_validator])
-    result = models.FileField(null=True, editable=False, upload_to=user_dir)
+    input = models.FileField(db_index=True, upload_to=user_dir, validators=[file_size_validator, file_content_validator])
+    result = models.FileField(null=True, db_index=True, editable=False, upload_to=user_dir)
 
     result_id = models.CharField(null=True, max_length=36, editable=False)
     error = models.TextField(null=True, editable=False)
