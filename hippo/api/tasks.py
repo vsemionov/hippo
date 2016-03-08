@@ -1,5 +1,6 @@
-from functools import wraps
+import os
 import socket
+from functools import wraps
 
 from django.db import OperationalError
 from django.conf import settings
@@ -12,6 +13,13 @@ from pymongo.errors import ConnectionFailure
 from .models import Job
 
 
+RESULT_SUFFIX = "_result"
+
+def get_result_name(input_name):
+    basename = os.path.basename(input_name)
+    filename, extension = os.path.splitext(basename)
+    return "%s%s%s" % (filename, RESULT_SUFFIX, extension)
+
 def process_job(fn):
     @wraps(fn)
     def wrapper(job_id, job_url):
@@ -19,14 +27,13 @@ def process_job(fn):
         job_filter.update(state=Job.STATES['started'])
         try:
             job = Job.objects.get(id=job_id)
-            result = fn(job.input)
-            state = Job.STATES['finished']
-            return result
+            fresult = fn(job.input)
+            result_name = get_result_name(job.input.name)
+            job.result.save(result_name, fresult, save=False)
+            job_filter.update(state=Job.STATES['finished'], result=job.result)
         except:
-            state = Job.STATES['failed']
+            job_filter.update(state=Job.STATES['failed'])
             raise
-        finally:
-            job_filter.update(state=state)
     return wrapper
 
 def retry_job(fn):
@@ -57,4 +64,5 @@ def notify_failed(email, url):
 @retry_job
 @process_job
 def execute(input_file):
-    pass
+    from django.core.files.base import ContentFile
+    return ContentFile("test")

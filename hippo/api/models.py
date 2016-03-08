@@ -33,6 +33,8 @@ class Job(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     input = models.FileField(upload_to=user_dir, validators=[file_size_validator, file_content_validator])
+    result = models.FileField(null=True, editable=False, upload_to=user_dir)
+
     result_id = models.CharField(null=True, max_length=36, editable=False)
 
     def delete(self, *args, **kwargs):
