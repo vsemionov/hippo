@@ -36,6 +36,7 @@ class Job(models.Model):
     result = models.FileField(null=True, editable=False, upload_to=user_dir)
 
     result_id = models.CharField(null=True, max_length=36, editable=False)
+    error = models.TextField(null=True, editable=False)
 
     def delete(self, *args, **kwargs):
         self.input.delete(save=False)

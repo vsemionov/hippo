@@ -1,6 +1,8 @@
 import os
 import socket
 from functools import wraps
+from traceback import print_exc
+from StringIO import StringIO
 
 from django.db import OperationalError
 from django.conf import settings
@@ -32,7 +34,10 @@ def process_job(fn):
             job.result.save(result_name, fresult, save=False)
             job_filter.update(state=Job.STATES['finished'], result=job.result)
         except:
-            job_filter.update(state=Job.STATES['failed'])
+            sio = StringIO()
+            print_exc(file=sio)
+            error = sio.getvalue()
+            job_filter.update(state=Job.STATES['failed'], error=error)
             raise
     return wrapper
 
