@@ -2,4 +2,4 @@
 
 set -e
 
-gunicorn -b 0.0.0.0:8000 -k gevent -w $WORKERS --max-requests $MAX_REQUESTS -u hippo -g hippo --access-logfile - $ARGS hippo.wsgi:application
+gunicorn -b 0.0.0.0:8000 -u hippo -g hippo -k gevent -w $WORKERS --worker-connections $WORKER_CONNECTIONS --max-requests $MAX_REQUESTS --access-logfile - $ARGS hippo.wsgi:application
