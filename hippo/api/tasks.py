@@ -30,7 +30,7 @@ def process_job(fn):
             fresults = fn(job.input.file)
             results_name = get_results_name(job.input.name)
             job.results.save(results_name, fresults, save=False)
-            job_filter.update(state=Job.STATES['finished'], results=job.results)
+            job_filter.update(state=Job.STATES['finished'], results=job.results, error=None)
         except Exception as exc:
             job_filter.update(state=Job.STATES['failed'], error=exc)
             raise
