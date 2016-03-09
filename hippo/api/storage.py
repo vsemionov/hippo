@@ -1,3 +1,5 @@
+import sys
+
 from django.conf import settings
 from django.core.files.base import File
 from django.core.files.storage import Storage
@@ -61,12 +63,20 @@ class GridFSStorage(Storage):
             content_type = get_content_type(content)
             if content_type:
                 kwargs['content_type'] = content_type
-            with self.fs.new_file(**kwargs) as gfile:
-                if hasattr(content, 'chunks'):
-                    for chunk in content.chunks():
-                        gfile.write(chunk)
-                else:
-                    gfile.write(content)
+            try:
+                with self.fs.new_file(**kwargs) as gfile:
+                    if hasattr(content, 'chunks'):
+                        for chunk in content.chunks():
+                            gfile.write(chunk)
+                    else:
+                        gfile.write(content)
+            except Exception:
+                exc_info = sys.exc_info()
+                try:
+                    self.delete(name)
+                except Exception:
+                    pass
+                raise exc_info
         return name
 
     def get_valid_name(self, name):
