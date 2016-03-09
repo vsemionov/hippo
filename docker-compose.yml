@@ -19,7 +19,7 @@ services:
     image: hippo_worker
     hostname: worker
     environment:
-      CONCURRENCY: 4
+      CONCURRENCY: 2
       MAX_TASKS_PER_CHILD: 1000
     command: ./worker.sh
   db:
@@ -67,5 +67,7 @@ services:
     image: hippo_proxy
     hostname: proxy
     environment:
+      WORKER_PROCESSES: auto
+      WORKER_CONNECTIONS: 1024
       WEB_HOST: web
     command: ./proxy.sh

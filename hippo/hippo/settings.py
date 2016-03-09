@@ -149,7 +149,7 @@ CACHES = {
             'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
             'CONNECTION_POOL_CLASS_KWARGS': {
                 'max_connections': 50,
-                'timeout': 20,
+                'timeout': 10,
             },
         },
     },
@@ -168,9 +168,10 @@ MONGODB = {
     'PASS': os.environ.get('MDB_PASS', ''),
     'OPTIONS': {
             'maxPoolSize': 100,
-            'socketTimeoutMS': 10000,
-            'connectTimeoutMS': 10000,
-            'waitQueueTimeoutMS': 20000,
+            'socketTimeoutMS': 5000,
+            'connectTimeoutMS': 5000,
+            'serverSelectionTimeoutMS': '10000',
+            'waitQueueTimeoutMS': 10000,
             'socketKeepAlive': True,
         }
 }
@@ -190,6 +191,7 @@ if not BROKER_URL:
 BROKER_HEARTBEAT = 60
 
 BROKER_POOL_LIMIT = 10
+BROKER_CONNECTION_TIMEOUT = 4
 
 CELERY_ACKS_LATE = True
 
@@ -200,7 +202,6 @@ CELERY_MAX_CACHED_RESULTS = 5000
 CELERY_RESULT_BACKEND = 'redis://:%s@%s/%s' % (os.environ.get('RDB_PASS', ''), os.environ.get('RDB_HOST', 'localhost'), os.environ.get('RDB_TASK_DB', '1'))
 CELERY_REDIS_MAX_CONNECTIONS = 100
 
-# Don't use pickle as serializer, json is much safer
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
