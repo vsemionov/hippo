@@ -34,6 +34,12 @@ def process_job(fn):
             results_name = get_results_name(job.input.name)
             job.results.save(results_name, fresults, save=False)
             job_filter.update(state=Job.STATES['finished'], results=job.results, error=None)
+        except TRANSIENT_ERRORS as exc:
+            try:
+                job_filter.update(state=Job.STATES['retrying'], error=exc)
+            except Exception:
+                pass
+            raise exc
         except Exception as exc:
             try:
                 job_filter.update(state=Job.STATES['failed'], error=exc)

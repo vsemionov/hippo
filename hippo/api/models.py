@@ -17,6 +17,7 @@ class Job(models.Model):
         ('pending', 'pending'),
         ('started', 'started'),
         ('finished', 'finished'),
+        ('retrying', 'retrying'),
         ('failed', 'failed'),
     ))
 
