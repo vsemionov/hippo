@@ -13,12 +13,12 @@ from pymongo.errors import ConnectionFailure
 from .models import Job
 
 
-RESULT_SUFFIX = "_result"
+RESULTS_SUFFIX = "_results"
 
-def get_result_name(input_name):
+def get_results_name(input_name):
     basename = os.path.basename(input_name)
     filename, extension = os.path.splitext(basename)
-    return "%s%s%s" % (filename, RESULT_SUFFIX, extension)
+    return "%s%s%s" % (filename, RESULTS_SUFFIX, extension)
 
 def process_job(fn):
     @wraps(fn)
@@ -27,10 +27,10 @@ def process_job(fn):
         job_filter.update(state=Job.STATES['started'])
         try:
             job = Job.objects.get(id=job_id)
-            fresult = fn(job.input.file)
-            result_name = get_result_name(job.input.name)
-            job.result.save(result_name, fresult, save=False)
-            job_filter.update(state=Job.STATES['finished'], result=job.result)
+            fresults = fn(job.input.file)
+            results_name = get_results_name(job.input.name)
+            job.results.save(results_name, fresults, save=False)
+            job_filter.update(state=Job.STATES['finished'], results=job.results)
         except Exception as exc:
             job_filter.update(state=Job.STATES['failed'], error=exc)
             raise

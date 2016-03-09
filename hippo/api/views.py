@@ -64,11 +64,11 @@ class UserViewSet(mixins.ListModelMixin,
 
 @require_safe
 def files(request, name):
-    q = Q(input=name) | Q(result=name)
+    q = Q(input=name) | Q(results=name)
     job = get_object_or_404(Job, q)
     if not JobPermissions().has_object_permission(request, None, job):
         raise Http404()
-    ffile = job.input if (job.input and job.input.name == name) else job.result
+    ffile = job.input if (job.input and job.input.name == name) else job.results
     assert ffile.name == name
     content_type = 'application/octet-stream'
     if hasattr(ffile.file, 'file'):
