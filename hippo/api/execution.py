@@ -35,7 +35,10 @@ def create_environment(env, finput):
             shutil.copyfileobj(finput, linput, length=32*1024)
 
 def execute_external(env):
-    pass
+    job_dir_path, input_filename, _, _ = env
+    input_path = os.path.join(job_dir_path, input_filename)
+    # TODO
+    os.remove(input_path)
 
 def save_results(env, perform_save):
     job_dir_path, _, output_path, results_basepath = env
@@ -49,6 +52,10 @@ def save_results(env, perform_save):
         path = output_path
     with open(path, mode='rb') as lresults:
         perform_save(lresults)
+    try:
+        os.remove(path)
+    except Exception:
+        pass
 
 def destroy_environment(env):
     job_dir_path, _, _, _ = env
