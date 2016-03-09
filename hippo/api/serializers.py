@@ -9,6 +9,7 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Job
+        exclude = ('async_id',)
 
 class UserSerializer(serializers.ModelSerializer):
     jobs = serializers.HyperlinkedRelatedField(many=True, source='job_set', view_name='job-detail', read_only=True)

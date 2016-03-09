@@ -38,13 +38,13 @@ class JobViewSet(mixins.CreateModelMixin,
             notify_finished, notify_failed = tasks.notify_finished, tasks.notify_failed
             link, link_error = notify_finished.si(job.owner.email, job_url), notify_failed.si(job.owner.email, job_url)
         result = execute_job.apply_async((job.id,), link=link, link_error=link_error)
-        Job.objects.filter(id=job.id).update(result_id=result.id)
+        Job.objects.filter(id=job.id).update(async_id=result.id)
 
     def perform_destroy(self, instance):
         instance.delete()
-        result_id = instance.result_id
-        if result_id:
-            AsyncResult(result_id).revoke()
+        async_id = instance.async_id
+        if async_id:
+            AsyncResult(async_id).revoke()
 
 
 class UserViewSet(mixins.ListModelMixin,
