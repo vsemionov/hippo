@@ -18,8 +18,6 @@ from .execution import execute
 
 TRANSIENT_ERRORS = (socket.error, django.db.OperationalError, pymongo.errors.ConnectionFailure)
 
-RESULTS_SUFFIX = '_results'
-
 
 def retry_job(fn):
     @wraps(fn)
