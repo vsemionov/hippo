@@ -49,7 +49,7 @@ class GridFSStorage(Storage):
     def _save(self, name, content):
         name = force_unicode(name).replace('\\', '/')
         content.open()
-        try:
+        with content:
             kwargs = {'filename': name}
             if hasattr(content.file, 'content_type'):
                 kwargs['content_type'] = content.file.content_type
@@ -59,8 +59,6 @@ class GridFSStorage(Storage):
                         gfile.write(chunk)
                 else:
                     gfile.write(content)
-        finally:
-            content.close()
         return name
 
     def get_valid_name(self, name):

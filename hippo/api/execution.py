@@ -31,9 +31,8 @@ def create_environment(env, finput):
     os.mkdir(job_dir_path)
     os.mkdir(output_dir_path)
     finput.open(mode='rb')
-    with finput:
-        with open(input_path, mode='wb') as linput:
-            shutil.copyfileobj(finput, linput, length=32*1024)
+    with finput, open(input_path, mode='wb') as linput:
+        shutil.copyfileobj(finput, linput, length=32*1024)
 
 def execute_external(env):
     job_dir_path, input_filename, _, _ = env
