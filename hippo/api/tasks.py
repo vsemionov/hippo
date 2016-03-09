@@ -35,8 +35,11 @@ def process_job(fn):
             job.results.save(results_name, fresults, save=False)
             job_filter.update(state=Job.STATES['finished'], results=job.results, error=None)
         except Exception as exc:
-            job_filter.update(state=Job.STATES['failed'], error=exc)
-            raise
+            try:
+                job_filter.update(state=Job.STATES['failed'], error=exc)
+            except Exception:
+                pass
+            raise exc
     return wrapper
 
 def retry_job(fn):
