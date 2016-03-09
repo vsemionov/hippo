@@ -30,7 +30,8 @@ def create_environment(env, finput):
     output_dir_path = os.path.join(job_dir_path, OUTPUT_DIR_NAME)
     os.mkdir(job_dir_path)
     os.mkdir(output_dir_path)
-    with finput.open(mode='rb'):
+    finput.open(mode='rb')
+    with finput:
         with open(input_path, mode='wb') as linput:
             shutil.copyfileobj(finput, linput, length=32*1024)
 
