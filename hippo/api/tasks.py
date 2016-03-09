@@ -42,8 +42,8 @@ def process_job(fn):
         update = {}
         try:
             job = Job.objects.get(id=job_id)
-            output, results = fn(job.input, job.output, job.results)
-            update.update(state=Job.STATES['finished'], output=output, results=results, error=None)
+            output, results, error = fn(job.input, job.output, job.results)
+            update.update(state=Job.STATES['finished'], output=output, results=results, error=error)
         except TRANSIENT_ERRORS as exc:
             update.update(state=Job.STATES['retrying'], error=exc)
             raise
@@ -84,8 +84,8 @@ def execute_job(finput, foutput, fresults):
     save_output = lambda loutput, content_type: save_file(foutput, loutput, content_type)
     save_results = lambda lresults, content_type: save_file(fresults, lresults, content_type)
     try:
-        execute(finput.file, save_output, save_results)
-        return foutput, fresults
+        error = execute(finput.file, save_output, save_results)
+        return foutput, fresults, error
     except Exception as exc:
         for ffile in (foutput, fresults):
             if ffile:
