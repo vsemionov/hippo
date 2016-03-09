@@ -65,13 +65,17 @@ class UserViewSet(mixins.ListModelMixin,
 
 @require_safe
 def files(request, name):
-    q = Q(input=name) | Q(results=name)
+    q = Q(input=name) | Q(output=name) | Q(results=name)
     job = get_object_or_404(Job, q)
     if not JobPermissions().has_object_permission(request, None, job):
         raise Http404()
-    ffile = job.input if (job.input and job.input.name == name) else job.results
-    assert ffile.name == name
-    content_type = get_content_type(ffile)
-    if not content_type:
-        content_type = 'application/octet-stream'
+    if job.input and job.input.name == name:
+        ffile = job.input
+    elif job.output and job.output.name == name:
+        ffile = job.output
+    elif job.results and job.results.name == name:
+        ffile = job.results
+    else:
+        assert False
+    content_type = get_content_type(ffile) or 'application/octet-stream'
     return FileResponse(ffile, content_type=content_type)

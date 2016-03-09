@@ -1,5 +1,3 @@
-import sys
-
 from django.conf import settings
 from django.core.files.base import File
 from django.core.files.storage import Storage
@@ -70,13 +68,12 @@ class GridFSStorage(Storage):
                             gfile.write(chunk)
                     else:
                         gfile.write(content)
-            except Exception:
-                exc_info = sys.exc_info()
+            except Exception as exc:
                 try:
                     self.delete(name)
                 except Exception:
                     pass
-                raise exc_info
+                raise exc
         return name
 
     def get_valid_name(self, name):

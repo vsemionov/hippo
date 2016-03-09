@@ -7,78 +7,64 @@ WORK_DIR_NAME = 'hippo_jobs'
 OUTPUT_FILENAME = 'output.txt'
 OUTPUT_DIR_NAME = 'output'
 OUTPUT_SUFFIX = '_output.txt'
-RESULTS_SUFFIX = '_results'
-RESULTS_FORMAT = 'zip'
+RESULTS_SUFFIX = '_results.zip'
 
 
 def prepare_environment(finput):
     input_filename = os.path.basename(finput.name)
     job_name = os.path.splitext(input_filename)[0]
     work_dir_path = os.path.join(tempfile.gettempdir(), WORK_DIR_NAME)
-    job_dir_path = os.path.join(work_dir_path, job_name)
-    results_basepath = os.path.join(work_dir_path, job_name) + RESULTS_SUFFIX
+    input_path = os.path.join(work_dir_path, input_filename)
     output_path = os.path.join(work_dir_path, job_name) + OUTPUT_SUFFIX
+    output_dir_path = os.path.join(work_dir_path, job_name)
+    results_path = os.path.join(work_dir_path, job_name) + RESULTS_SUFFIX
+    return work_dir_path, input_path, output_path, output_dir_path, results_path
+
+def create_environment(env, finput):
+    work_dir_path, input_path, _, output_dir_path, _ = env
     try:
         os.mkdir(work_dir_path)
     except OSError:
         pass
-    return job_dir_path, input_filename, output_path, results_basepath
-
-def create_environment(env, finput):
-    job_dir_path, input_filename, _, _ = env
-    input_path = os.path.join(job_dir_path, input_filename)
-    output_dir_path = os.path.join(job_dir_path, OUTPUT_DIR_NAME)
-    os.mkdir(job_dir_path)
     os.mkdir(output_dir_path)
     finput.open(mode='rb')
     with finput, open(input_path, mode='wb') as linput:
         shutil.copyfileobj(finput, linput, length=32*1024)
 
 def execute_external(env):
-    job_dir_path, input_filename, _, _ = env
-    input_path = os.path.join(job_dir_path, input_filename)
-    try:
-        # TODO
-        pass
-    finally:
+    work_dir_path, input_path, output_path, output_dir_path, _ = env
+    input_filename = os.path.basename(input_path)
+    output_filename = os.path.basename(output_path)
+    output_dir_name = os.path.basename(output_dir_path)
+    # TODO
+
+def save_results(env, perform_save_output, perform_save_results):
+    _, _, output_path, output_dir_path, results_path = env
+    if os.path.exists(output_path):
+        with open(output_path, mode='rb') as loutput:
+            perform_save_output(loutput, content_type='text/plain')
+    if len(os.listdir(output_dir_path)):
+        basename, extension = os.path.splitext(results_path)
+        aformat = extension[1:]
+        path = shutil.make_archive(basename, aformat, output_dir_path)
+        assert path == results_path
+        with open(results_path, mode='rb') as lresults:
+            perform_save_results(lresults, content_type='application/octet-stream')
+
+def destroy_environment(env):
+    _, input_path, output_path, output_dir_path, results_path = env
+    shutil.rmtree(output_dir_path, ignore_errors=True)
+    for path in (input_path, output_path, results_path):
         try:
-            os.remove(input_path)
+            os.remove(path)
         except Exception:
             pass
 
-def save_results(env, perform_save):
-    job_dir_path, _, output_path, results_basepath = env
-    output_path_orig = os.path.join(job_dir_path, OUTPUT_FILENAME)
-    output_dir_path = os.path.join(job_dir_path, OUTPUT_DIR_NAME)
-    temp_path = None
-    content_type = None
-    try:
-        if len(os.listdir(output_dir_path)):
-            temp_path = results_basepath + '.' + RESULTS_FORMAT
-            temp_path = shutil.make_archive(results_basepath, RESULTS_FORMAT, job_dir_path)
-        else:
-            temp_path = output_path
-            assert os.path.exists(output_path_orig)
-            os.rename(output_path_orig, output_path)
-            content_type = 'text/plain'
-        with open(temp_path, mode='rb') as lresults:
-            perform_save(lresults, content_type=content_type)
-    finally:
-        if temp_path and os.path.exists(temp_path):
-            try:
-                os.remove(temp_path)
-            except Exception:
-                pass
-
-def destroy_environment(env):
-    job_dir_path, _, _, _ = env
-    shutil.rmtree(job_dir_path, ignore_errors=True)
-
-def execute(finput, perform_save):
+def execute(finput, perform_save_output, perform_save_results):
     env = prepare_environment(finput)
     try:
         create_environment(env, finput)
         execute_external(env)
-        save_results(env, perform_save)
+        save_results(env, perform_save_output, perform_save_results)
     finally:
         destroy_environment(env)
