@@ -1,3 +1,4 @@
+import os
 import socket
 from functools import wraps
 
@@ -73,6 +74,7 @@ def notify_failed(email, url):
 @process_job
 def execute_job(finput, fresults):
     def save_results(lresults):
+        name = os.path.basename(lresults.name)
         with File(lresults) as llresults:
-            fresults.save(llresults.name, llresults, save=False)
+            fresults.save(name, llresults, save=False)
     execute(finput.file, save_results)
