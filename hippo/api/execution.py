@@ -37,7 +37,7 @@ def create_environment(env, finput):
 def execute_external(env):
     pass
 
-def save_results(env):
+def save_results(env, perform_save):
     job_dir_path, _, output_path, results_basepath = env
     output_path_orig = os.path.join(job_dir_path, OUTPUT_FILENAME)
     output_dir_path = os.path.join(job_dir_path, OUTPUT_DIR_NAME)
@@ -47,18 +47,18 @@ def save_results(env):
         assert os.path.exists(output_path_orig)
         os.rename(output_path_orig, output_path)
         path = output_path
-    return path
+    with open(path, mode='rb') as lresults:
+        perform_save(lresults)
 
 def destroy_environment(env):
     job_dir_path, _, _, _ = env
     shutil.rmtree(job_dir_path, ignore_errors=True)
 
-def execute(finput):
+def execute(finput, perform_save):
     env = prepare_environment(finput)
     try:
         create_environment(env, finput)
         execute_external(env)
-        path = save_results(env)
-        return path
+        save_results(env, perform_save)
     finally:
         destroy_environment(env)

@@ -5,6 +5,7 @@ import django.db
 from django.conf import settings
 from django.utils.timezone import now
 from django.core.mail import send_mail
+from django.core.files.base import File
 
 from celery import shared_task
 
@@ -30,12 +31,12 @@ def retry_job(fn):
 
 def process_job(fn):
     @wraps(fn)
-    def wrapper(job_id, job_url):
+    def wrapper(job_id):
         job_filter = Job.objects.filter(id=job_id)
         job_filter.update(updated=now(), state=Job.STATES['started'])
         try:
             job = Job.objects.get(id=job_id)
-            results = fn(job.input)
+            results = fn(job.input, job.results)
             job_filter.update(updated=now(), state=Job.STATES['finished'], results=results, error=None)
         except TRANSIENT_ERRORS as exc:
             try:
@@ -69,5 +70,8 @@ def notify_failed(email, url):
 @shared_task(bind=True)
 @retry_job
 @process_job
-def execute_job(finput):
-    return execute(finput.file)
+def execute_job(finput, fresults):
+    def save_results(lresults):
+        with File(lresults) as llresults:
+            fresults.save(llresults.name, llresults, save=False)
+    execute(finput.file, save_results)
