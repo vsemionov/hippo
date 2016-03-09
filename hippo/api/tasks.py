@@ -76,3 +76,4 @@ def execute_job(finput, fresults):
         with File(lresults) as llresults:
             fresults.save(name, llresults, save=False)
     execute(finput.file, save_results)
+    return fresults
