@@ -2,18 +2,21 @@ import os
 import socket
 from functools import wraps
 
-from django.db import OperationalError
+import django.db
 from django.conf import settings
 from django.core.mail import send_mail
 
 from celery import shared_task
 
-from pymongo.errors import ConnectionFailure
+import pymongo.errors
 
 from .models import Job
 
 
+TRANSIENT_ERRORS = (socket.error, django.db.OperationalError, pymongo.errors.ConnectionFailure)
+
 RESULTS_SUFFIX = "_results"
+
 
 def get_results_name(input_name):
     basename = os.path.basename(input_name)
@@ -41,7 +44,7 @@ def retry_job(fn):
     def wrapper(self, *args, **kwargs):
         try:
             return fn(*args, **kwargs)
-        except (socket.error, OperationalError, ConnectionFailure) as exc:
+        except TRANSIENT_ERRORS as exc:
             self.retry(exc=exc, countdown=30, max_retries=2**31)
     return wrapper
 
