@@ -37,25 +37,36 @@ def create_environment(env, finput):
 def execute_external(env):
     job_dir_path, input_filename, _, _ = env
     input_path = os.path.join(job_dir_path, input_filename)
-    # TODO
-    os.remove(input_path)
+    try:
+        # TODO
+        pass
+    finally:
+        try:
+            os.remove(input_path)
+        except Exception:
+            pass
 
 def save_results(env, perform_save):
     job_dir_path, _, output_path, results_basepath = env
     output_path_orig = os.path.join(job_dir_path, OUTPUT_FILENAME)
     output_dir_path = os.path.join(job_dir_path, OUTPUT_DIR_NAME)
-    if os.path.exists(output_dir_path):
-        path = shutil.make_archive(results_basepath, RESULTS_FORMAT, job_dir_path)
-    else:
-        assert os.path.exists(output_path_orig)
-        os.rename(output_path_orig, output_path)
-        path = output_path
-    with open(path, mode='rb') as lresults:
-        perform_save(lresults)
+    temp_path = None
     try:
-        os.remove(path)
-    except Exception:
-        pass
+        if len(os.listdir(output_dir_path)):
+            temp_path = results_basepath + '.' + RESULTS_FORMAT
+            temp_path = shutil.make_archive(results_basepath, RESULTS_FORMAT, job_dir_path)
+        else:
+            temp_path = output_path
+            assert os.path.exists(output_path_orig)
+            os.rename(output_path_orig, output_path)
+        with open(temp_path, mode='rb') as lresults:
+            perform_save(lresults)
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
 
 def destroy_environment(env):
     job_dir_path, _, _, _ = env
