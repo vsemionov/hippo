@@ -4,6 +4,7 @@ from functools import wraps
 
 import django.db
 from django.conf import settings
+from django.utils.timezone import now
 from django.core.mail import send_mail
 
 from celery import shared_task
@@ -27,22 +28,22 @@ def process_job(fn):
     @wraps(fn)
     def wrapper(job_id, job_url):
         job_filter = Job.objects.filter(id=job_id)
-        job_filter.update(state=Job.STATES['started'])
+        job_filter.update(updated=now(), state=Job.STATES['started'])
         try:
             job = Job.objects.get(id=job_id)
             fresults = fn(job.input.file)
             results_name = get_results_name(job.input.name)
             job.results.save(results_name, fresults, save=False)
-            job_filter.update(state=Job.STATES['finished'], results=job.results, error=None)
+            job_filter.update(updated=now(), state=Job.STATES['finished'], results=job.results, error=None)
         except TRANSIENT_ERRORS as exc:
             try:
-                job_filter.update(state=Job.STATES['retrying'], error=exc)
+                job_filter.update(updated=now(), state=Job.STATES['retrying'], error=exc)
             except Exception:
                 pass
             raise exc
         except Exception as exc:
             try:
-                job_filter.update(state=Job.STATES['failed'], error=exc)
+                job_filter.update(updated=now(), state=Job.STATES['failed'], error=exc)
             except Exception:
                 pass
             raise exc
