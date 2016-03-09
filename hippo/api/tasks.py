@@ -34,22 +34,23 @@ def process_job(fn):
     def wrapper(job_id):
         job_filter = Job.objects.filter(id=job_id)
         job_filter.update(updated=now(), state=Job.STATES['started'])
+        update = {}
         try:
             job = Job.objects.get(id=job_id)
             results = fn(job.input, job.results)
-            job_filter.update(updated=now(), state=Job.STATES['finished'], results=results, error=None)
+            update.update(state=Job.STATES['finished'], results=results, error=None)
         except TRANSIENT_ERRORS as exc:
-            try:
-                job_filter.update(updated=now(), state=Job.STATES['retrying'], error=exc)
-            except Exception:
-                pass
-            raise exc
+            update.update(state=Job.STATES['retrying'], error=exc)
+            raise
         except Exception as exc:
-            try:
-                job_filter.update(updated=now(), state=Job.STATES['failed'], error=exc)
-            except Exception:
-                pass
-            raise exc
+            update.update(state=Job.STATES['failed'], error=exc)
+            raise
+        finally:
+            if update:
+                try:
+                    job_filter.update(updated=now(), **update)
+                except Exception:
+                    pass
     return wrapper
 
 def notify(email, url, state):
