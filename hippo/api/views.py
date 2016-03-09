@@ -32,11 +32,11 @@ class JobViewSet(mixins.CreateModelMixin,
         serializer.save(owner=self.request.user)
         job = serializer.instance
         job_url = self.request.build_absolute_uri(reverse('job-detail', args=[job.id]))
-        execute, link, link_error = tasks.execute, None, None
+        execute_job, link, link_error = tasks.execute_job, None, None
         if job.notify and job.owner.email:
             notify_finished, notify_failed = tasks.notify_finished, tasks.notify_failed
             link, link_error = notify_finished.si(job.owner.email, job_url), notify_failed.si(job.owner.email, job_url)
-        result = execute.apply_async((job.id, job_url), link=link, link_error=link_error)
+        result = execute_job.apply_async((job.id, job_url), link=link, link_error=link_error)
         Job.objects.filter(id=job.id).update(result_id=result.id)
 
     def perform_destroy(self, instance):

@@ -1,4 +1,3 @@
-import os
 import socket
 from functools import wraps
 
@@ -12,17 +11,22 @@ from celery import shared_task
 import pymongo.errors
 
 from .models import Job
+from .execution import execute
 
 
 TRANSIENT_ERRORS = (socket.error, django.db.OperationalError, pymongo.errors.ConnectionFailure)
 
-RESULTS_SUFFIX = "_results"
+RESULTS_SUFFIX = '_results'
 
 
-def get_results_name(input_name):
-    basename = os.path.basename(input_name)
-    filename, extension = os.path.splitext(basename)
-    return "%s%s%s" % (filename, RESULTS_SUFFIX, extension)
+def retry_job(fn):
+    @wraps(fn)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except TRANSIENT_ERRORS as exc:
+            self.retry(exc=exc, countdown=30, max_retries=2**31)
+    return wrapper
 
 def process_job(fn):
     @wraps(fn)
@@ -31,10 +35,8 @@ def process_job(fn):
         job_filter.update(updated=now(), state=Job.STATES['started'])
         try:
             job = Job.objects.get(id=job_id)
-            fresults = fn(job.input.file)
-            results_name = get_results_name(job.input.name)
-            job.results.save(results_name, fresults, save=False)
-            job_filter.update(updated=now(), state=Job.STATES['finished'], results=job.results, error=None)
+            results = fn(job.input)
+            job_filter.update(updated=now(), state=Job.STATES['finished'], results=results, error=None)
         except TRANSIENT_ERRORS as exc:
             try:
                 job_filter.update(updated=now(), state=Job.STATES['retrying'], error=exc)
@@ -47,15 +49,6 @@ def process_job(fn):
             except Exception:
                 pass
             raise exc
-    return wrapper
-
-def retry_job(fn):
-    @wraps(fn)
-    def wrapper(self, *args, **kwargs):
-        try:
-            return fn(*args, **kwargs)
-        except TRANSIENT_ERRORS as exc:
-            self.retry(exc=exc, countdown=30, max_retries=2**31)
     return wrapper
 
 def notify(email, url, state):
@@ -76,5 +69,5 @@ def notify_failed(email, url):
 @shared_task(bind=True)
 @retry_job
 @process_job
-def execute(input_file):
-    return input_file
+def execute_job(finput):
+    return execute(finput.file)
