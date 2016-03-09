@@ -7,6 +7,13 @@ from pymongo import MongoClient
 from gridfs import GridFS, NoFile
 
 
+def get_content_type(ffile):
+    if hasattr(ffile, 'content_type'):
+        return ffile.content_type
+    if hasattr(ffile, 'file'):
+        return get_content_type(ffile.file)
+    return None
+
 class GridFSStorage(Storage):
     URL_PREFIX = '/files/'
 
@@ -51,8 +58,9 @@ class GridFSStorage(Storage):
         content.open()
         with content:
             kwargs = {'filename': name}
-            if hasattr(content.file, 'content_type'):
-                kwargs['content_type'] = content.file.content_type
+            content_type = get_content_type(content)
+            if content_type:
+                kwargs['content_type'] = content_type
             with self.fs.new_file(**kwargs) as gfile:
                 if hasattr(content, 'chunks'):
                     for chunk in content.chunks():

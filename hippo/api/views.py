@@ -12,6 +12,7 @@ from celery.result import AsyncResult
 from .models import Job
 from .serializers import JobSerializer, UserSerializer
 from .permissions import JobPermissions, get_jobs_filter, get_user_jobs_filter_func
+from .storage import get_content_type
 
 from . import tasks
 
@@ -70,9 +71,7 @@ def files(request, name):
         raise Http404()
     ffile = job.input if (job.input and job.input.name == name) else job.results
     assert ffile.name == name
-    content_type = 'application/octet-stream'
-    if hasattr(ffile.file, 'file'):
-        if hasattr(ffile.file.file, 'content_type'):
-            if ffile.file.file.content_type:
-                content_type = ffile.file.file.content_type
+    content_type = get_content_type(ffile)
+    if not content_type:
+        content_type = 'application/octet-stream'
     return FileResponse(ffile, content_type=content_type)

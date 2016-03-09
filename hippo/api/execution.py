@@ -51,6 +51,7 @@ def save_results(env, perform_save):
     output_path_orig = os.path.join(job_dir_path, OUTPUT_FILENAME)
     output_dir_path = os.path.join(job_dir_path, OUTPUT_DIR_NAME)
     temp_path = None
+    content_type = None
     try:
         if len(os.listdir(output_dir_path)):
             temp_path = results_basepath + '.' + RESULTS_FORMAT
@@ -59,8 +60,9 @@ def save_results(env, perform_save):
             temp_path = output_path
             assert os.path.exists(output_path_orig)
             os.rename(output_path_orig, output_path)
+            content_type = 'text/plain'
         with open(temp_path, mode='rb') as lresults:
-            perform_save(lresults)
+            perform_save(lresults, content_type=content_type)
     finally:
         if temp_path and os.path.exists(temp_path):
             try:

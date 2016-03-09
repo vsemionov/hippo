@@ -19,6 +19,12 @@ from .execution import execute
 TRANSIENT_ERRORS = (socket.error, django.db.OperationalError, pymongo.errors.ConnectionFailure)
 
 
+class ContentTypeAwareFile(File):
+    def __init__(self, content_type, *args, **kwargs):
+        super(ContentTypeAwareFile, self).__init__(*args, **kwargs)
+        self.content_type = content_type
+
+
 def retry_job(fn):
     @wraps(fn)
     def wrapper(self, *args, **kwargs):
@@ -71,9 +77,9 @@ def notify_failed(email, url):
 @retry_job
 @process_job
 def execute_job(finput, fresults):
-    def save_results(lresults):
+    def save_results(lresults, content_type=None):
         name = os.path.basename(lresults.name)
-        with File(lresults) as llresults:
+        with ContentTypeAwareFile(content_type, lresults) as llresults:
             fresults.save(name, llresults, save=False)
     execute(finput.file, save_results)
     return fresults
