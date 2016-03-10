@@ -4,8 +4,6 @@ services:
     extends:
       file: docker-compose.django.yml
       service: django
-    build: .
-    image: hippo
     hostname: web
     environment:
       WORKERS: 2
@@ -18,8 +16,6 @@ services:
     extends:
       file: docker-compose.django.yml
       service: django
-    build: .
-    image: hippo
     hostname: worker
     environment:
       CONCURRENCY: 2
@@ -27,12 +23,10 @@ services:
     command: ./worker.sh
   proxy:
     extends:
-      file: docker-compose.base.yml
-      service: base
+      file: docker-compose.hippo.yml
+      service: hippo
     depends_on:
       - web
-    build: .
-    image: hippo
     hostname: proxy
     environment:
       WORKER_PROCESSES: auto

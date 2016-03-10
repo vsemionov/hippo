@@ -8,11 +8,7 @@ python:
   - "2.7"
 
 env:
-  global:
-    - DOCKER_COMPOSE_VERSION=1.6.2
-  matrix:
-    - TARGET_ENV=dev
-    - TARGET_ENV=test
+  - DOCKER_COMPOSE_VERSION=1.6.2
 
 before_install:
   - sudo apt-get update
@@ -22,10 +18,13 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-  - if [ $TARGET_ENV == "dev" ]; then pip install `egrep ^\(Django\|celery\|djangorestframework\|psycopg2\)== requirements.txt`; fi
 
 install:
-  - bin/mk${TARGET_ENV}env.sh
+  - bin/mktestenv.sh
   - bin/deploy.sh
 
 script: true
+
+after_success:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" -e="$DOCKER_EMAIL"
+  - docker push vsemionov/hippo:tested

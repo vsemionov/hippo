@@ -1,0 +1,8 @@
+version: '2'
+services:
+  hippo:
+    extends:
+      file: docker-compose.base.yml
+      service: base
+    build: .
+    image: vsemionov/hippo:tested

@@ -2,8 +2,8 @@ version: '2'
 services:
   django:
     extends:
-      file: docker-compose.base.yml
-      service: base
+      file: docker-compose.hippo.yml
+      service: hippo
     environment:
       ALLOWED_HOSTS: 'www.hippo.com, hippo.com'
       MQ_HOST: mq
