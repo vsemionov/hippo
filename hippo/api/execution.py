@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+import subprocess
 
 
 WORK_DIR_NAME = 'hippo_jobs'
@@ -8,6 +9,8 @@ OUTPUT_FILENAME = 'output.txt'
 OUTPUT_DIR_NAME = 'output'
 OUTPUT_SUFFIX = '_output.txt'
 RESULTS_SUFFIX = '_results.zip'
+
+NPAMP_PATH = '/npamp/npamp/npamp.py'
 
 
 def prepare_environment(finput):
@@ -33,10 +36,9 @@ def create_environment(env, finput):
 
 def execute_external(env):
     work_dir_path, input_path, output_path, output_dir_path, _ = env
-    input_filename = os.path.basename(input_path)
-    output_filename = os.path.basename(output_path)
-    output_dir_name = os.path.basename(output_dir_path)
-    # TODO
+    with open(output_path, 'wt') as loutput:
+        retcode = subprocess.call((NPAMP_PATH, '-o', output_dir_path, input_path), stdout=loutput, stderr=loutput, cwd=work_dir_path)
+    return retcode
 
 def save_results(env, perform_save_output, perform_save_results):
     _, _, output_path, output_dir_path, results_path = env
@@ -64,7 +66,8 @@ def execute(finput, perform_save_output, perform_save_results):
     env = prepare_environment(finput)
     try:
         create_environment(env, finput)
-        execute_external(env)
+        retcode = execute_external(env)
         save_results(env, perform_save_output, perform_save_results)
+        return None if not retcode else "execution error"
     finally:
         destroy_environment(env)
