@@ -16,7 +16,7 @@ RUN git clone -n https://github.com/vsemionov/npamp.git /npamp && \
     cd /npamp && \
     git checkout 889db36b0c8d7660310efc5fbf16e82d4a8b9052 && \
     make ext
+RUN openssl req -x509 -newkey rsa:2048 -nodes -out /hippo/hippo/cert.pem -keyout /hippo/hippo/key.pem -days 365 -subj '/CN=Hippo' && \
+    chmod 600 /hippo/hippo/key.pem
 WORKDIR /hippo/hippo
-RUN openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365 -subj '/CN=Hippo' && \
-    chmod 600 key.pem
 EXPOSE 80 443 8000
