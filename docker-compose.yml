@@ -4,7 +4,7 @@ services:
     extends:
       file: docker-compose.django.yml
       service: django
-    image: hippo_web
+    image: hippo
     hostname: web
     environment:
       WORKERS: 2
@@ -17,12 +17,25 @@ services:
     extends:
       file: docker-compose.django.yml
       service: django
-    image: hippo_worker
+    image: hippo
     hostname: worker
     environment:
       CONCURRENCY: 2
       MAX_TASKS_PER_CHILD: 1000
     command: ./worker.sh
+  proxy:
+    extends:
+      file: docker-compose.base.yml
+      service: base
+    depends_on:
+      - web
+    image: hippo
+    hostname: proxy
+    environment:
+      WORKER_PROCESSES: auto
+      WORKER_CONNECTIONS: 1024
+      WEB_HOST: web
+    command: ./proxy.sh
   db:
     extends:
       file: docker-compose.base.yml
@@ -59,16 +72,3 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: hippo
       RABBITMQ_DEFAULT_PASS: slow
-  proxy:
-    extends:
-      file: docker-compose.base.yml
-      service: base
-    depends_on:
-      - web
-    image: hippo_proxy
-    hostname: proxy
-    environment:
-      WORKER_PROCESSES: auto
-      WORKER_CONNECTIONS: 1024
-      WEB_HOST: web
-    command: ./proxy.sh

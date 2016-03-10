@@ -15,6 +15,14 @@ services:
     volumes:
       - .:/hippo
     restart: 'no'
+  proxy:
+    build: .
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - .:/hippo
+    restart: 'no'
   db:
     ports:
       - '5432:5432'
@@ -30,12 +38,4 @@ services:
   mq:
     ports:
       - '5672:5672'
-    restart: 'no'
-  proxy:
-    build: .
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - .:/hippo
     restart: 'no'
