@@ -37,7 +37,7 @@ def create_environment(env, finput):
 def execute_external(env):
     work_dir_path, input_path, output_path, output_dir_path, _ = env
     with open(output_path, 'wt') as loutput:
-        retcode = subprocess.call((NPAMP_PATH, '-o', output_dir_path, input_path), stdout=loutput, stderr=loutput, cwd=work_dir_path)
+        retcode = subprocess.call((NPAMP_PATH, '-o', output_dir_path, input_path), stdout=loutput, stderr=subprocess.STDOUT, cwd=work_dir_path)
     return retcode
 
 def save_results(env, perform_save_output, perform_save_results):
