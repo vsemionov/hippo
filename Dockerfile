@@ -16,7 +16,7 @@ RUN git clone -n https://github.com/vsemionov/npamp.git /npamp && \
     pip install -r requirements.txt && \
     make ext
 
-COPY requirements.txt /hippo
+COPY requirements.txt /hippo/
 RUN pip install -r /hippo/requirements.txt
 COPY hippo /hippo
 RUN bash -c "echo yes | python /hippo/hippo/manage.py collectstatic"
