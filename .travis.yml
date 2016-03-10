@@ -7,8 +7,12 @@ language: python
 python:
   - "2.7"
 
+env:
+  - TARGET_ENV=dev
+  - TARGET_ENV=test
+
 install:
-  - bin/mktestenv.sh
+  - bin/mk${TARGET_ENV}env.sh
   - bin/deploy.sh
 
 script: true
