@@ -12,6 +12,8 @@ env:
   - TARGET_ENV=test
 
 install:
+  - docker -v
+  - docker-compose -v
   - bin/mk${TARGET_ENV}env.sh
   - bin/deploy.sh
 
