@@ -8,21 +8,10 @@ python:
   - "2.7"
 
 env:
-  global:
-    - DOCKER_COMPOSE_VERSION=1.6.2
-  matrix:
-    - TARGET_ENV=dev
-    - TARGET_ENV=test
+  - TARGET_ENV=dev
+  - TARGET_ENV=test
 
 install:
-  - docker -v
-  - docker-compose -v
-  - sudo apt-get update
-  - sudo apt-get install -y docker-engine=1.10.2
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
   - bin/mk${TARGET_ENV}env.sh
   - bin/deploy.sh
 
