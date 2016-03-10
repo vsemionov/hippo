@@ -4,6 +4,7 @@ services:
     extends:
       file: docker-compose.django.yml
       service: django
+    build: .
     image: hippo
     hostname: web
     environment:
@@ -17,6 +18,7 @@ services:
     extends:
       file: docker-compose.django.yml
       service: django
+    build: .
     image: hippo
     hostname: worker
     environment:
@@ -29,6 +31,7 @@ services:
       service: base
     depends_on:
       - web
+    build: .
     image: hippo
     hostname: proxy
     environment:
