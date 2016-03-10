@@ -5,4 +5,4 @@ set -e
 DIR=`dirname $0`
 
 cd $DIR/..
-cp docker-compose.test.yml docker-compose.override.yml
+cp docker-compose.override.test.yml docker-compose.override.yml
