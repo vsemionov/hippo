@@ -22,8 +22,8 @@ To deploy, first install `docker-engine` and `docker-compose`. Optionally, to sk
 The configuration is contained in:
 * `requirements.txt` - python dependencies and versions
 * `Dockerfile` - container image build procedure
-* `docker-compose.\*` - service configuration and dependencies
+* `docker-compose.*` - service configuration and dependencies
 * `hippo/hippo/settings.py` - main django-based service configuration
 * `hippo/nginx.conf` - nginx configuration template
-* `hippo/\*.sh` - service startup scripts
-* `hippo/hippo/\*.conf` - additional per-service django configuration
+* `hippo/*.sh` - service startup scripts
+* `hippo/hippo/*.conf` - additional per-service django configuration
