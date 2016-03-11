@@ -1,0 +1,78 @@
+import model
+
+version = 1.0
+
+inf = float("inf")
+nan = float("nan")
+
+amp_rtol = 0.02
+amplification = True
+amplifier_classes = [model.amplifier.HybridAmplifier, model.amplifier.NSFDAmplifier]
+beam_class = model.beam.GaussianBeam
+beam_radius = 0.002
+depop_model_class = model.depop.RossApproximateASEModel
+depop_model_extra_args = {}
+depop_rate_min_samples = 4096
+depop_rate_rtol = 0.05
+dopant_branching_ratio = 0.56
+dopant_concentration = 1.38e+26
+dopant_lower_lifetime = 1.7e-10
+dopant_upper_lifetime = 0.00023
+dopant_xsection = 2.8e-23
+ext_alt_depop_model = model.depop.FluorescenceModel
+ext_depop_models = []
+ext_opt_fluence_max = 10000.0
+ext_opt_geom_beamradius = (0.001, 0.004)
+ext_opt_geom_mediumradius = (0.001, 0.004)
+ext_opt_geom_resolution = (1, 1)
+ext_opt_inversion_rdiff_max = 0.1
+ext_opt_pump_duration = (0.000115, 0.00046)
+ext_opt_pump_power = (2000.0, 8000.0)
+ext_opt_pump_resolution = (1, 1)
+extended_mode = True
+extended_status_strides = (4, 0)
+graphs = True
+initial_inversion = 0.0
+int_rtol = 0.01
+integrator_classes = [model.integrator.SimpsonIntegrator]
+inversion_min_count_t = 0
+inversion_rtol = 0.01
+inversion_validate = False
+inverter_class = model.inverter.RungeKuttaInverter
+lasing_wavelen = 1.064e-06
+lower_process_priority = True
+medium_length = 0.1
+medium_radius = 0.002
+medium_refr_idx = 1.82
+min_count_phi = 0
+min_count_rho = 0
+min_count_t = 1025
+min_count_z = 513
+num_tasks = 0
+out_count_phi = 33
+out_count_rho = 33
+out_count_t = 33
+out_count_z = 25
+out_num_auto_contours = 5
+out_num_markers = 3
+output_color = True
+output_data = False
+output_file_format = 'png'
+output_plot_titles = True
+output_rel_time = False
+output_styled_lines = True
+pulse_class = model.pulse.GaussianPulse
+pulse_duration = 5e-10
+pulse_energy = 0.05
+pulse_num_stride = 100
+pump_duration = 0.00025
+pump_efficiency = 0.5
+pump_power = 4000.0
+pump_wavelen = 8.08e-07
+time_trunc_rtol = 0.01
+train_pulse_count = 1
+train_pulse_period = 1e-09
+verbose = False
+
+del inf
+del nan
