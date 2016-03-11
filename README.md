@@ -8,7 +8,7 @@ A scalable distributed web application and API for asynchronous execution of [NP
 
 ### Notes
 
-This project consists of several components and uses **Docker** to deploy the following set of corresponding services:
+This project consists of several components and uses **Docker** to deploy the following services:
 * **Django**-based ReST API
 * **Celery**-based job executors
 * **RabbitMQ** as a message broker
