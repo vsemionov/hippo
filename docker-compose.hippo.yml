@@ -5,4 +5,4 @@ services:
       file: docker-compose.base.yml
       service: base
     build: .
-    image: vsemionov/hippo:tested
+    image: vsemionov/hippo

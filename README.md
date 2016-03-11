@@ -14,7 +14,7 @@ For test environments, before deploying, run `bin/mktestenv.sh`.
 
 For production environments, before deploying, set `ALLOWED_HOSTS` in `docker-compose.django.yml` to the correct comma-separated list of values.
 
-To deploy, first install `docker-engine` and `docker-compose`. Optionally, to skip building and deploy from the last tested image (which, however, may be out of sync with the scripts and configuration), run `sudo docker pull vsemionov/hippo:tested`. Finally, run `bin/deploy.sh`.
+To deploy, first install `docker-engine` and `docker-compose`. Optionally, to skip building and deploy from the last tested image (which, however, may be out of sync with the scripts and configuration), run `sudo docker pull vsemionov/hippo`. Finally, run `bin/deploy.sh`.
 
 
 ### Configuration
