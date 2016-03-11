@@ -3,9 +3,6 @@
 set -e
 
 
-DIR=`dirname $0`
-
-
 WEB_IP=`docker inspect --format '{{ .NetworkSettings.Networks.hippo_default.IPAddress }}' hippo_web_1`
 PROXY_IP=`docker inspect --format '{{ .NetworkSettings.Networks.hippo_default.IPAddress }}' hippo_proxy_1`
 MQ_IP=`docker inspect --format '{{ .NetworkSettings.Networks.hippo_default.IPAddress }}' hippo_mq_1`
@@ -33,8 +30,11 @@ sleep 2
 done
 
 
+TEMPDIR=`mktemp -d`
+echo "graphs = True" >$TEMPDIR/test.npc
+
 echo "posting test job..."
-JOB_URL=`http -a admin:admin --verify=no --form POST https://$PROXY_IP/jobs/ input@$DIR/../test.npc public=true | jq -r '.url'`
+JOB_URL=`http -a admin:admin --verify=no --form POST https://$PROXY_IP/jobs/ input@$TEMPDIR/test.npc public=true | jq -r '.url'`
 [ $JOB_URL == "null" ] && exit 1
 
 echo "waiting for output and results..."
