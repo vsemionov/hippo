@@ -14,3 +14,8 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hippo.settings")
 
 application = get_wsgi_application()
+
+
+# psycogreen
+from psycogreen.gevent import patch_psycopg
+patch_psycopg()

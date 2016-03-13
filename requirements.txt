@@ -4,6 +4,7 @@ django-redis-cache==1.6.5
 djangorestframework==3.3.2
 gevent==1.1.0
 gunicorn==19.4.5
+psycogreen==1.0
 psycopg2==2.6.1
 pymongo==3.2.1
 redis==2.10.5
