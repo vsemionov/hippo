@@ -14,7 +14,7 @@ This project uses **Docker** to deploy the following services:
 * **Celery**-based job executors
 * **RabbitMQ** as a message broker
 * **PostgreSQL** for user and job storage
-* **MongoDB** for result storage
+* **MongoDB GridFS** for result storage
 * **Redis** for caching and session storage
 * **Nginx** for proxying and serving static files
 
