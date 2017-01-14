@@ -1,7 +1,8 @@
 Hippo
 =====
-A scalable distributed web application and API for asynchronous execution of [NPAmp](https://github.com/vsemionov/npamp) jobs
------------------------------------------------------------------------------------------------------------------------------
+
+A scalable distributed web application and API for asynchronous execution of [NPAmp](https://github.com/vsemionov/npamp) jobs on a cluster of workers
+-----------------------------------------------------------------------------------------------------------------------------------------------------
 
 [![Build Status](https://travis-ci.org/vsemionov/hippo.svg?branch=master)](https://travis-ci.org/vsemionov/hippo)
 
@@ -9,7 +10,7 @@ A scalable distributed web application and API for asynchronous execution of [NP
 ### Notes
 
 This project uses **Docker** to deploy the following services:
-* **Django**-based ReST API
+* **Django** and **Django REST Framework**-based REST API
 * **Celery**-based job executors
 * **RabbitMQ** as a message broker
 * **PostgreSQL** for user and job storage
